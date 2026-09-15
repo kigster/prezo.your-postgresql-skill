@@ -223,8 +223,8 @@ Note: [4:45 to 6:00] Rule one. Treat a migration as a production operation. You 
 <div class="card fragment">
 <div class="num">1</div>
 <div>
-<div class="kicker">Add the rule, read nothing</div>
-<p><code>CHECK (currency IS NOT NULL) NOT VALID</code> applies to every new row and reads none of the old ones, so the lock lasts an instant.</p>
+<div class="kicker">Add the rule, lock for an instant</div>
+<p><code>CHECK (currency IS NOT NULL) NOT VALID</code> guards every new row and reads none of the old ones.</p>
 </div>
 </div>
 

@@ -467,8 +467,8 @@ body,
 }
 
 .reveal .steps .card {
-    padding: 0.55em 0.95em 0.6em;
-    margin-bottom: 0.4em;
+    padding: 0.5em 0.95em 0.55em;
+    margin-bottom: 0.18em;
 }
 
 .reveal .steps .card p {
