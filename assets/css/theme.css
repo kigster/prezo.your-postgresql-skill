@@ -294,7 +294,8 @@ body,
 
 /* A sequence: numbered, because the order matters. */
 .reveal .steps .card {
-    margin-bottom: 0.45em;
+    margin-bottom: 0.32em;
+    padding: 0.55em 1em 0.6em;
     display: grid;
     grid-template-columns: 2.4em 1fr;
     gap: 0.6em;
@@ -414,7 +415,7 @@ body,
 
 .reveal .lede {
     margin-bottom: auto;
-    padding-bottom: 0.6em;
+    padding-bottom: 0.35em;
     font-size: 1.2em;
     font-weight: 500;
     font-stretch: 100%;

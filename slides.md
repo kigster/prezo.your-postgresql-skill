@@ -216,35 +216,37 @@ Note: [4:45 to 6:00] Rule one. Treat a migration as a production operation. You 
 
 ## Add NOT NULL in three migrations, not one
 
+<p class="lede">To enforce that <code>invoices.currency</code> is always there, <code>change_column_null</code> takes the strongest lock and reads all 200 million rows to prove it. The table is unavailable until it finishes.</p>
+
 <div class="steps">
 
 <div class="card fragment">
-<div class="num">01</div>
+<div class="num">1</div>
 <div>
-<div class="kicker">Add the check, read no rows</div>
-<p><code>ADD CONSTRAINT ... CHECK (currency IS NOT NULL) NOT VALID</code> takes a brief lock and scans nothing.</p>
+<div class="kicker">Add the rule, read nothing</div>
+<p><code>CHECK (currency IS NOT NULL) NOT VALID</code> applies to every new row and reads none of the old ones, so the lock lasts an instant.</p>
 </div>
 </div>
 
 <div class="card fragment">
-<div class="num">02</div>
+<div class="num">2</div>
 <div>
-<div class="kicker">Validate in a separate migration</div>
-<p><code>VALIDATE CONSTRAINT</code> scans the table while writes continue.</p>
+<div class="kicker">Prove it, in its own migration</div>
+<p><code>VALIDATE CONSTRAINT</code> reads all 200 million rows under a weaker lock. Your app keeps reading and writing.</p>
 </div>
 </div>
 
 <div class="card fragment">
-<div class="num">03</div>
+<div class="num">3</div>
 <div>
-<div class="kicker">Set NOT NULL</div>
-<p>PostgreSQL 12 and later use the validated check as proof and skip the scan.</p>
+<div class="kicker">Now set NOT NULL</div>
+<p>PostgreSQL 12 and later accept the validated check as the proof, skip the scan, and flip a flag.</p>
 </div>
 </div>
 
 </div>
 
-`change_column_null` does it in one step, and holds the strongest lock while it reads every row.
+<p class="fragment">Three short locks instead of one long one, and the same column in the end.</p>
 
 Note: [6:00 to 7:00] Rule two. Adding a column with a default is safe since PostgreSQL 11. Adding null false to an existing column is not. The agent will reach for change_column_null, which locks the whole table and scans every row to prove there are no nulls. On a big table, that is an outage. The safe version is three migrations. First, add a check constraint marked NOT VALID, which takes a brief lock and reads nothing. Second, validate it, which scans the table but lets writes continue. Third, set NOT NULL. PostgreSQL sees the validated check and skips the scan. Nobody remembers this at 11 at night, so write it down.
 
