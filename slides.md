@@ -1,8 +1,8 @@
-<!-- .slide: class="title-slide" -->
+<!-- .slide: class="center title-slide" -->
 
 <div class="subtitle">A 15-minute talk for Ruby developers who ship with coding agents</div>
 
-# What belongs in your<br>PostgreSQL<br>skills file
+# What belongs in your<br>PostgreSQL<br><span class="hit">skills file</span><span class="cursor"></span>
 
 <div class="date">Konstantin Gredeskoul, kig.re</div>
 
@@ -14,7 +14,7 @@ Note: [0:00, 30 seconds] Your coding agent writes a lot of your migrations now. 
 
 ## Which database are you building?
 
-<div class="four-grid">
+<div class="four-grid rise">
 
 <div class="card">
 
@@ -125,7 +125,7 @@ Note: [2:45 to 3:45] Why a file at all? Because review does not scale. My own ou
 
 ## A short trigger file, and a long reference file
 
-<div class="three-grid">
+<div class="three-grid rise">
 
 <div class="card">
 
@@ -216,7 +216,7 @@ Note: [4:45 to 6:00] Rule one. Treat a migration as a production operation. You 
 
 ## Add NOT NULL in three migrations, not one
 
-<p class="lede">To enforce that <code>invoices.currency</code> is always there, <code>change_column_null</code> takes the strongest lock and reads all 200 million rows to prove it. The table is unavailable until it finishes.</p>
+<p class="lede">To enforce that <code>invoices.currency</code> is never null, <code>change_column_null</code> takes the strongest lock and reads all 200 million rows. The table is unavailable until it finishes.</p>
 
 <div class="steps">
 
@@ -256,7 +256,7 @@ Note: [6:00 to 7:00] Rule two. Adding a column with a default is safe since Post
 
 ## Four rules that fit on one line each
 
-<div class="four-grid">
+<div class="four-grid rise">
 
 <div class="card">
 
@@ -421,7 +421,7 @@ Note: [10:15 to 11:15] This is the one index rule worth carrying in your head. P
 
 ## Everything else goes in the reference file
 
-<div class="three-grid">
+<div class="three-grid rise">
 
 <div class="card">
 
@@ -501,7 +501,7 @@ Note: [12:30 to 13:30] Here is the recipe. Start with the class, because every r
 
 <p class="lede">How I run my Software Team</p>
 
-<div class="three-grid">
+<div class="three-grid rise">
 
 <div class="card">
 
@@ -547,7 +547,7 @@ Note: [13:30 to 14:30] One more thing, if you want to see how the skill file fit
 
 ---
 
-<!-- .slide: class="final-slide" -->
+<!-- .slide: class="center final-slide" -->
 
 # Thanks
 

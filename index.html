@@ -31,12 +31,9 @@
             </section>
         </div>
 
-        <div id="page-frame" aria-hidden="true">
-            <div class="page-header">
-                <span class="page-no">page <b class="n">1</b> of <b class="total"></b></span>
-                <span class="pointers"></span>
-                <span class="section"></span>
-            </div>
+        <div id="presentation-footer">
+            <span class="footer-mark">postgres-schema</span>
+            <span class="page-number"></span>
         </div>
     </div>
 
@@ -59,8 +56,32 @@
         Reveal.initialize({
             hash: true,
             slideNumber: false,
-            progress: false,
-            transition: 'fade',
+
+            // Nothing advances the deck on its own. Space, right arrow and
+            // Enter move forward; left arrow and Backspace move back.
+            autoSlide: 0,
+            autoSlideStoppable: true,
+            loop: false,
+            touch: false,
+            navigationMode: 'linear',
+            keyboard: {
+                32: 'next',   // space
+                39: 'next',   // right arrow
+                13: 'next',   // enter
+                37: 'prev',   // left arrow
+                8: 'prev',    // backspace
+                40: null,     // down arrow does nothing
+                38: null,     // up arrow does nothing
+                33: null,     // page up
+                34: null,     // page down
+                78: null,     // n
+                80: null,     // p
+                74: null,     // j
+                75: null,     // k
+                76: null,     // l
+                72: null      // h
+            },
+            transition: 'slide',
             transitionSpeed: 'fast',
             backgroundTransition: 'fade',
             center: false,
@@ -74,15 +95,15 @@
         });
 
         Reveal.on('slidechanged', event => {
-            updatePageHeader(event.indexh + 1);
+            updateFooter(event.indexh + 1);
         });
 
         Reveal.on('ready', event => {
             fixCodeBlockClasses();
-            updatePageHeader(Reveal.getIndices().h + 1);
+            updateFooter(Reveal.getIndices().h + 1);
             setTimeout(() => {
                 fixCodeBlockClasses();
-                updatePageHeader(Reveal.getIndices().h + 1);
+                updateFooter(Reveal.getIndices().h + 1);
             }, 250);
         });
 
@@ -100,27 +121,17 @@
             });
         }
 
-        // Draws the heap page header: page number, one line pointer per slide,
-        // and the current slide's section name taken from its .eyebrow.
-        function updatePageHeader(currentSlide) {
-            const header = document.querySelector('#page-frame .page-header');
+        function updateFooter(currentSlide) {
+            const footer = document.getElementById('presentation-footer');
             const totalSlides = Reveal.getTotalSlides();
-            const pointers = header.querySelector('.pointers');
-            const section = header.querySelector('.section');
-            const eyebrow = Reveal.getCurrentSlide().querySelector('.eyebrow');
+            const pageNumber = footer.querySelector('.page-number');
 
-            header.querySelector('.n').textContent = currentSlide;
-            header.querySelector('.total').textContent = totalSlides;
-
-            pointers.replaceChildren(...Array.from({ length: totalSlides }, (_, i) => {
-                const tick = document.createElement('i');
-                if (i + 1 < currentSlide) tick.className = 'used';
-                if (i + 1 === currentSlide) tick.className = 'current';
-                return tick;
-            }));
-
-            section.textContent = eyebrow ? eyebrow.textContent : '';
-            section.classList.toggle('danger', !!eyebrow && eyebrow.classList.contains('warning'));
+            if (currentSlide === 1 || currentSlide === totalSlides) {
+                footer.style.display = 'none';
+            } else {
+                footer.style.display = 'flex';
+                pageNumber.textContent = `${currentSlide} / ${totalSlides}`;
+            }
         }
     </script>
 </body>

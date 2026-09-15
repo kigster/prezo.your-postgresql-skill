@@ -1,127 +1,98 @@
-/*
- * The 8 KB heap page.
- *
- * Every slide is drawn as a PostgreSQL heap page: a header strip with the
- * page number and one line pointer per slide, the headline at the start of
- * the page, and the content stacked against the end of the page the way
- * tuples fill it. Danger orange marks only the things that go wrong.
- */
-
 :root {
-    --paper: #E9EEF2;
-    --tuple: #F5F7F9;
-    --ink: #10263B;
-    --slonik: #336791;
-    --danger: #D63B12;
-    --hair: #B8C4CE;
-    --muted: #5B6F80;
+    --bg: #07090A;
+    --bg-2: #101412;
+    --ink: #F3EEE4;
+    --muted: #8B877C;
+    --lime: #C8F542;
+    --amber: #FF8A1E;
+    --hair: #2A322E;
+    --card: #121816;
 }
 
 html,
 body,
-.reveal-viewport,
 .reveal {
-    background: var(--paper);
+    background: var(--bg);
 }
 
 .reveal {
-    --r-background-color: var(--paper);
-    --r-main-color: var(--ink);
-    --r-heading-color: var(--ink);
-    --r-link-color: var(--slonik);
-    --r-link-color-hover: var(--danger);
-    --r-selection-background-color: var(--slonik);
     font-family: var(--r-main-font);
     color: var(--ink);
-    font-weight: 430;
+    font-weight: 600;
 }
 
-/* Page layout: headline first, content pushed to the end of the page. */
 .reveal .slides {
     text-align: left;
 }
 
-.reveal .slides > section {
-    height: 100%;
-    padding: 64px 0 8px !important;
-    box-sizing: border-box;
-    flex-direction: column;
-}
-
-.reveal .slides > section[style*="display: block"] {
-    display: flex !important;
-}
-
-.reveal .slides > section > h2 {
-    margin-bottom: auto;
-    padding-bottom: 0.5em;
-}
-
-/* Headings. Width is part of the voice: wide and heavy for the headline. */
 .reveal h1,
 .reveal h2,
 .reveal h3,
-.reveal h4 {
+.reveal h4,
+.reveal h5,
+.reveal h6 {
     font-family: var(--r-heading-font);
     color: var(--ink);
+    font-weight: 700;
     text-transform: none;
+    letter-spacing: -0.02em;
     text-shadow: none;
-    letter-spacing: -0.015em;
 }
 
 .reveal h1 {
-    font-size: 3.1em;
-    font-weight: 820;
-    font-stretch: 118%;
-    line-height: 0.96;
-    margin: 0 0 0.3em;
+    font-size: 3.8em;
+    color: var(--lime);
+    margin-bottom: 0.35em;
+    line-height: 0.95;
 }
 
 .reveal h2 {
-    font-size: 1.95em;
-    font-weight: 780;
-    font-stretch: 112%;
-    line-height: 1.04;
-    margin: 0;
-    max-width: 21em;
+    font-size: 2.2em;
+    color: var(--ink);
+    margin-bottom: 0.28em;
+    line-height: 1.02;
 }
 
 .reveal h3 {
-    font-size: 1.02em;
-    font-weight: 700;
-    font-stretch: 100%;
-    letter-spacing: 0;
-    margin: 0 0 0.3em;
+    font-size: 1.5em;
+    color: var(--lime);
+    margin-bottom: 0.25em;
 }
 
 .reveal p,
 .reveal li {
-    font-size: 1.02em;
-    line-height: 1.4;
+    font-size: 1.25em;
+    line-height: 1.45;
     color: var(--ink);
-    margin: 0 0 0.55em;
+    font-weight: 600;
+}
+
+.reveal p code,
+.reveal li code,
+.reveal .card code {
+    font-size: 0.78em !important;
+    padding: 0.02em 0.2em;
+    vertical-align: baseline;
 }
 
 .reveal strong {
-    color: var(--ink);
-    font-weight: 740;
+    color: var(--lime);
+    font-weight: 700;
 }
 
 .reveal em {
-    color: var(--slonik);
-    font-style: italic;
-    font-weight: 560;
+    color: var(--amber);
+    font-style: normal;
+    font-weight: 700;
 }
 
 .reveal a {
-    color: var(--slonik);
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.15em;
+    color: var(--lime);
+    text-decoration: none;
 }
 
 .reveal a:hover {
-    color: var(--danger);
+    color: var(--amber);
 }
 
 .reveal ul,
@@ -129,101 +100,142 @@ body,
     margin-left: 1em;
 }
 
-/* The section name lives in the page header, so the slide copy is hidden visually. */
-.reveal .eyebrow {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
+.reveal ul li,
+.reveal ol li {
+    margin-bottom: 0.4em;
 }
 
-/* Code: stored tuple data, ink on paper inverted. */
 .reveal pre {
     width: 100%;
-    margin: 0.5em 0;
+    margin: 0.6em auto;
     box-shadow: none;
-    border-radius: 3px;
+    border-radius: 0;
 }
 
 .reveal pre code {
     font-family: var(--r-code-font);
-    font-size: 0.66em;
-    line-height: 1.4;
-    padding: 0.9em 1.1em;
-    max-height: 640px;
+    font-size: 0.82em;
+    line-height: 1.35;
+    padding: 1em;
+    max-height: 600px;
     overflow: auto;
-    background: var(--ink);
-    color: var(--paper);
-    border-radius: 3px;
+    background: var(--bg-2);
 }
 
 .reveal code {
     font-family: var(--r-code-font);
-    color: var(--ink);
-    background: rgba(51, 103, 145, 0.13);
-    padding: 0.02em 0.25em;
-    border-radius: 3px;
-    font-size: 0.84em;
+    color: var(--lime);
+    background-color: rgba(200, 245, 66, 0.08);
+    padding: 0.05em 0.3em;
+    border-radius: 0;
+    font-size: 0.85em;
 }
 
-.reveal pre code {
-    font-size: 0.66em;
+.reveal .progress {
+    color: var(--lime);
+    height: 6px;
 }
 
 .reveal .controls {
-    color: var(--slonik);
+    color: var(--lime);
 }
 
-/* Title and closing pages. */
+.reveal .title-slide h1 {
+    font-size: 3.8em;
+    margin-top: 0.15em;
+    color: var(--ink);
+}
+
+.reveal .title-slide h1 .hit {
+    color: var(--lime);
+}
+
 .reveal .title-slide .subtitle {
-    margin-top: auto;
-    font-stretch: 100%;
-    font-size: 0.9em;
-    font-weight: 500;
-    color: var(--muted);
-    margin-bottom: 0.6em;
+    font-family: var(--r-code-font);
+    font-size: 0.72em;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-top: 0;
 }
 
 .reveal .title-slide .date {
-    font-size: 0.9em;
-    font-weight: 600;
-    color: var(--slonik);
+    font-family: var(--r-code-font);
+    font-size: 0.68em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.9em;
+}
+
+.reveal .final-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .reveal .final-slide h1 {
-    margin-top: auto;
-    font-size: 3.6em;
+    font-size: 5em;
+    margin-bottom: 0.15em;
+    color: var(--lime);
 }
 
 .reveal .final-slide .author-section {
     display: flex;
-    align-items: flex-end;
-    gap: 2.2em;
-    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 3em;
+    margin-top: 1.5em;
 }
 
 .reveal .final-slide .author-photo {
-    margin-left: auto;
-    width: 340px;
-    height: 340px;
+    width: 220px;
+    height: 220px;
+    border-radius: 0;
+    border: 4px solid var(--lime);
+    box-shadow: none;
     object-fit: cover;
-    border: 1.5px solid var(--ink);
-    border-radius: 3px;
 }
 
 .reveal .final-slide .questions {
-    font-size: 1.85em;
-    font-weight: 700;
-    font-stretch: 112%;
-    line-height: 1.2;
+    font-family: var(--r-heading-font);
+    font-size: 2.4em;
+    line-height: 1.15;
     color: var(--ink);
+    text-align: left;
 }
 
 .reveal .final-slide .author-credit {
-    margin-top: 1.4em;
-    font-size: 0.8em;
+    font-family: var(--r-code-font);
+    font-size: 0.9em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2.4em;
+}
+
+#presentation-footer {
+    position: fixed;
+    bottom: 36px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+#presentation-footer .page-number,
+#presentation-footer .footer-mark {
+    font-family: var(--r-code-font);
+    font-size: 0.85em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
 }
 
 .reveal img {
@@ -232,22 +244,127 @@ body,
     background: none;
 }
 
-/* Tuples: a filled block with an ink top rule. Danger tuples get an orange rule. */
+.reveal blockquote {
+    background: transparent;
+    border-left: 6px solid var(--amber);
+    padding: 0.2em 0 0.2em 0.8em;
+    margin: 0.8em 0;
+    font-style: normal;
+    color: var(--ink);
+}
+
+.reveal .highlight {
+    color: var(--lime);
+    font-weight: 700;
+}
+
+.reveal .warning {
+    color: var(--amber);
+    font-weight: 700;
+}
+
+.reveal section.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
 .reveal .two-columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.6em;
-    align-items: end;
+    gap: 2em;
+    align-items: start;
+}
+
+.reveal .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+    margin-top: 1.4em;
+}
+
+.reveal .comparison > div {
+    padding: 1.3em 1.4em;
+    border-radius: 0;
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-left: 6px solid var(--lime);
+}
+
+.reveal .comparison > div:last-child {
+    border-left-color: var(--amber);
+}
+
+.reveal .comparison h3 {
+    font-family: var(--r-code-font);
+    font-size: 0.85em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.reveal .benefits-list {
+    list-style: none;
+    counter-reset: benefits;
+    margin: 0.6em 0 0 0;
+    padding: 0;
+}
+
+.reveal .benefits-list li {
+    counter-increment: benefits;
+    position: relative;
+    padding-left: 2.4em;
+    margin-bottom: 0.38em;
+    font-size: 1.12em;
+}
+
+.reveal .benefits-list li::before {
+    content: counter(benefits);
+    position: absolute;
+    left: 0;
+    top: 0.05em;
+    width: 1.6em;
+    height: 1.6em;
+    background: var(--lime);
+    color: var(--bg);
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--r-heading-font);
+    font-weight: 700;
+    font-size: 0.85em;
+}
+
+.reveal .eyebrow {
+    font-family: var(--r-code-font);
+    font-size: 0.62em;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 0.45em;
+}
+
+.reveal .eyebrow.warning {
+    display: inline-block;
+    background: var(--amber);
+    color: var(--bg);
+    padding: 0.28em 0.7em 0.2em;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    margin-bottom: 0.7em;
 }
 
 .reveal .three-grid,
 .reveal .four-grid {
     display: grid;
-    gap: 0.6em;
+    gap: 0.9em;
+    margin-top: 0.9em;
 }
 
 .reveal .three-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .reveal .four-grid {
@@ -255,176 +372,109 @@ body,
 }
 
 .reveal .card {
-    padding: 0.8em 1em 0.9em;
-    background: var(--tuple);
+    padding: 1em 1.15em;
+    background: var(--card);
     border: 1px solid var(--hair);
-    border-top: 4px solid var(--ink);
-    border-radius: 3px;
+    border-left: 6px solid var(--lime);
+    border-radius: 0;
+    text-align: left;
 }
 
 .reveal .card.amber {
-    border-top-color: var(--danger);
+    border-left-color: var(--amber);
+}
+
+.reveal .card h3 {
+    font-size: 1.25em;
+    margin: 0 0 0.35em 0;
+    font-family: var(--r-code-font);
+    color: var(--lime);
 }
 
 .reveal .card.amber h3 {
-    color: var(--danger);
+    color: var(--amber);
 }
 
 .reveal .card p,
 .reveal .card li {
-    font-size: 0.86em;
+    font-size: 1em;
     margin: 0;
-}
-
-.reveal .card p + p {
-    margin-top: 0.55em;
+    color: var(--ink);
+    font-weight: 500;
 }
 
 .reveal .card .kicker {
-    font-size: 0.62em;
-    font-weight: 650;
-    font-stretch: 80%;
-    color: var(--muted);
-    margin-bottom: 0.3em;
+    font-family: var(--r-code-font);
+    font-size: 0.68em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 0.35em;
 }
 
 .reveal .card.amber .kicker {
-    color: var(--danger);
+    color: var(--amber);
 }
 
-/* A sequence: numbered, because the order matters. */
+.reveal .stat {
+    font-family: var(--r-heading-font);
+    font-size: 3.4em;
+    line-height: 0.9;
+    color: var(--lime);
+    margin: 0.15em 0 0.1em;
+}
+
+.reveal .stat.amber {
+    color: var(--amber);
+}
+
 .reveal .steps .card {
-    margin-bottom: 0.32em;
-    padding: 0.55em 1em 0.6em;
+    margin-bottom: 0.55em;
     display: grid;
-    grid-template-columns: 2.4em 1fr;
-    gap: 0.6em;
+    grid-template-columns: 3.2em 1fr;
+    gap: 0.8em;
     align-items: start;
 }
 
 .reveal .steps .num {
-    font-size: 1.5em;
-    font-weight: 800;
-    font-stretch: 125%;
-    color: var(--slonik);
+    font-family: var(--r-heading-font);
+    font-size: 1.8em;
+    color: var(--lime);
     line-height: 1;
-    font-variant-numeric: tabular-nums;
-}
-
-.reveal .benefits-list {
-    list-style: none;
-    counter-reset: step;
-    margin: 0;
-    padding: 0;
-}
-
-.reveal .benefits-list li {
-    counter-increment: step;
-    position: relative;
-    padding: 0.35em 0 0.35em 2em;
-    margin: 0;
-    border-top: 1px solid var(--hair);
-}
-
-.reveal .benefits-list li::before {
-    content: counter(step);
-    position: absolute;
-    left: 0;
-    font-weight: 800;
-    font-stretch: 125%;
-    color: var(--slonik);
 }
 
 .reveal .kill {
-    font-size: 1.2em;
-    font-weight: 750;
-    font-stretch: 108%;
-    line-height: 1.15;
-    color: var(--danger);
-    margin-top: 0.5em;
+    font-family: var(--r-heading-font);
+    font-size: 1.6em;
+    color: var(--amber);
+    margin-top: 0.6em;
 }
 
-/* Page frame and header strip, drawn outside the scaled slide. */
-#page-frame {
-    position: fixed;
-    inset: 16px;
-    border: 1.5px solid var(--ink);
-    border-radius: 4px;
-    pointer-events: none;
-    z-index: 20;
-}
-
-#page-frame .page-header {
-    display: flex;
-    align-items: center;
-    gap: 1.4em;
-    height: 3.1em;
-    padding: 0 1.2em;
-    border-bottom: 1px solid var(--hair);
-    font-family: 'Archivo', sans-serif;
-    font-stretch: 72%;
-    font-weight: 600;
-    font-size: clamp(11px, 0.95vw, 19px);
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-}
-
-#page-frame .page-no b {
-    color: var(--ink);
-    font-weight: 750;
-}
-
-#page-frame .pointers {
-    display: flex;
-    gap: 0.28em;
-}
-
-#page-frame .pointers i {
-    width: 0.5em;
-    height: 1.1em;
-    border: 1px solid var(--hair);
-    border-radius: 1px;
-    transform-origin: bottom;
-}
-
-#page-frame .pointers i.used {
-    background: var(--ink);
-    border-color: var(--ink);
-}
-
-#page-frame .pointers i.current {
-    background: var(--slonik);
-    border-color: var(--slonik);
-}
-
-#page-frame .section {
-    margin-left: auto;
-    color: var(--ink);
-    font-weight: 650;
-}
-
-#page-frame .section.danger {
-    color: var(--danger);
-}
-
-/* A headline with a lede: the lede sits under the headline, content still ends the page. */
-.reveal .slides > section > h2:has(+ .lede) {
-    margin-bottom: 0;
-    padding-bottom: 0.2em;
-}
-
+/* A headline that needs one line of setup before the content. */
 .reveal .lede {
-    margin-bottom: auto;
-    padding-bottom: 0.35em;
-    font-size: 1.2em;
-    font-weight: 500;
-    font-stretch: 100%;
-    color: var(--slonik);
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1.25;
+    margin: 0 0 0.5em;
 }
 
 .reveal .card .repo {
-    margin-top: 0.8em;
-    font-size: 0.66em;
-    font-weight: 600;
-    font-stretch: 85%;
+    margin-top: 0.7em;
+    font-family: var(--r-code-font);
+    font-size: 0.7em;
+    letter-spacing: 0.02em;
+}
+
+.reveal .steps .card {
+    padding: 0.55em 0.95em 0.6em;
+    margin-bottom: 0.4em;
+}
+
+.reveal .steps .card p {
+    font-size: 0.92em;
+}
+
+.reveal .steps .num {
+    font-size: 1.5em;
 }
