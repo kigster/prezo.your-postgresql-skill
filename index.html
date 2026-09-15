@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What belongs in your PostgreSQL skills file</title>
+
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/black.css" id="theme">
+    <link rel="stylesheet" href="node_modules/prismjs/themes/prism-tomorrow.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/css/theme.css">
+
+    <style>
+        .reveal .slides section {
+            text-align: left;
+        }
+
+        .reveal .slides section.center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section data-markdown="slides.md" data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="^Note:">
+            </section>
+        </div>
+
+        <div id="presentation-footer">
+            <span class="footer-mark">postgres-schema</span>
+            <span class="page-number"></span>
+        </div>
+    </div>
+
+    <script>
+        window.Prism = window.Prism || {};
+        window.Prism.manual = false;
+    </script>
+    <script src="node_modules/prismjs/prism.js"></script>
+    <script src="node_modules/prismjs/components/prism-ruby.js"></script>
+    <script src="node_modules/prismjs/components/prism-sql.js"></script>
+    <script src="node_modules/prismjs/components/prism-bash.js"></script>
+    <script src="node_modules/prismjs/components/prism-yaml.js"></script>
+
+    <script src="node_modules/reveal.js/dist/reveal.js"></script>
+    <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="node_modules/reveal.js/plugin/notes/notes.js"></script>
+    <script src="node_modules/reveal.js/plugin/zoom/zoom.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: false,
+            transition: 'slide',
+            transitionSpeed: 'fast',
+            backgroundTransition: 'fade',
+            center: false,
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            markdown: {
+                smartypants: false
+            },
+            plugins: [RevealMarkdown, RevealNotes, RevealZoom]
+        });
+
+        Reveal.on('slidechanged', event => {
+            updateFooter(event.indexh + 1);
+        });
+
+        Reveal.on('ready', event => {
+            fixCodeBlockClasses();
+            updateFooter(Reveal.getIndices().h + 1);
+            setTimeout(() => {
+                fixCodeBlockClasses();
+                updateFooter(Reveal.getIndices().h + 1);
+            }, 250);
+        });
+
+        function fixCodeBlockClasses() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                Array.from(block.classList).forEach(cls => {
+                    if (cls && !cls.startsWith('language-') && cls !== 'hljs') {
+                        block.classList.remove(cls);
+                        block.classList.add(`language-${cls}`);
+                    }
+                });
+                if (window.Prism) {
+                    Prism.highlightElement(block);
+                }
+            });
+        }
+
+        function updateFooter(currentSlide) {
+            const footer = document.getElementById('presentation-footer');
+            const totalSlides = Reveal.getTotalSlides();
+            const pageNumber = footer.querySelector('.page-number');
+
+            if (currentSlide === 1 || currentSlide === totalSlides) {
+                footer.style.display = 'none';
+            } else {
+                footer.style.display = 'flex';
+                pageNumber.textContent = `${currentSlide} / ${totalSlides}`;
+            }
+        }
+    </script>
+</body>
+
+</html>

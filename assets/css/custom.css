@@ -1,0 +1,21 @@
+@import url('../fonts/FantasqueSansMono.css');
+@import url('../fonts/Dosis.css');
+@import url('../fonts/Agdasima.css');
+
+.reveal {
+    --r-code-font: 'Fantasque Sans Mono', monospace;
+    --r-main-font: 'Dosis', sans-serif;
+    --r-heading-font: 'Agdasima', sans-serif;
+}
+
+pre[class*="language-"] {
+    margin: 20px 0 !important;
+    padding: 0 !important;
+    border: 1px solid #2A322E !important;
+    border-radius: 0 !important;
+
+    code {
+        font-size: 0.72em !important;
+        min-height: auto !important;
+    }
+}

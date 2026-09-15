@@ -1,0 +1,451 @@
+:root {
+    --bg: #07090A;
+    --bg-2: #101412;
+    --ink: #F3EEE4;
+    --muted: #8B877C;
+    --lime: #C8F542;
+    --amber: #FF8A1E;
+    --hair: #2A322E;
+    --card: #121816;
+}
+
+html,
+body,
+.reveal {
+    background: var(--bg);
+}
+
+.reveal {
+    font-family: var(--r-main-font);
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.reveal .slides {
+    text-align: left;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+    font-family: var(--r-heading-font);
+    color: var(--ink);
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: -0.02em;
+    text-shadow: none;
+}
+
+.reveal h1 {
+    font-size: 3.8em;
+    color: var(--lime);
+    margin-bottom: 0.35em;
+    line-height: 0.95;
+}
+
+.reveal h2 {
+    font-size: 2.2em;
+    color: var(--ink);
+    margin-bottom: 0.28em;
+    line-height: 1.02;
+}
+
+.reveal h3 {
+    font-size: 1.5em;
+    color: var(--lime);
+    margin-bottom: 0.25em;
+}
+
+.reveal p,
+.reveal li {
+    font-size: 1.25em;
+    line-height: 1.45;
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.reveal p code,
+.reveal li code,
+.reveal .card code {
+    font-size: 0.78em !important;
+    padding: 0.02em 0.2em;
+    vertical-align: baseline;
+}
+
+.reveal strong {
+    color: var(--lime);
+    font-weight: 700;
+}
+
+.reveal em {
+    color: var(--amber);
+    font-style: normal;
+    font-weight: 700;
+}
+
+.reveal a {
+    color: var(--lime);
+    text-decoration: none;
+}
+
+.reveal a:hover {
+    color: var(--amber);
+}
+
+.reveal ul,
+.reveal ol {
+    margin-left: 1em;
+}
+
+.reveal ul li,
+.reveal ol li {
+    margin-bottom: 0.4em;
+}
+
+.reveal pre {
+    width: 100%;
+    margin: 0.6em auto;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.reveal pre code {
+    font-family: var(--r-code-font);
+    font-size: 0.82em;
+    line-height: 1.35;
+    padding: 1em;
+    max-height: 600px;
+    overflow: auto;
+    background: var(--bg-2);
+}
+
+.reveal code {
+    font-family: var(--r-code-font);
+    color: var(--lime);
+    background-color: rgba(200, 245, 66, 0.08);
+    padding: 0.05em 0.3em;
+    border-radius: 0;
+    font-size: 0.85em;
+}
+
+.reveal .progress {
+    color: var(--lime);
+    height: 6px;
+}
+
+.reveal .controls {
+    color: var(--lime);
+}
+
+.reveal .title-slide h1 {
+    font-size: 3.8em;
+    margin-top: 0.15em;
+    color: var(--ink);
+}
+
+.reveal .title-slide h1 .hit {
+    color: var(--lime);
+}
+
+.reveal .title-slide .subtitle {
+    font-family: var(--r-code-font);
+    font-size: 0.72em;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-top: 0;
+}
+
+.reveal .title-slide .date {
+    font-family: var(--r-code-font);
+    font-size: 0.68em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.9em;
+}
+
+.reveal .final-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.reveal .final-slide h1 {
+    font-size: 5em;
+    margin-bottom: 0.15em;
+    color: var(--lime);
+}
+
+.reveal .final-slide .author-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3em;
+    margin-top: 1.5em;
+}
+
+.reveal .final-slide .author-photo {
+    width: 220px;
+    height: 220px;
+    border-radius: 0;
+    border: 4px solid var(--lime);
+    box-shadow: none;
+    object-fit: cover;
+}
+
+.reveal .final-slide .questions {
+    font-family: var(--r-heading-font);
+    font-size: 2.4em;
+    line-height: 1.15;
+    color: var(--ink);
+    text-align: left;
+}
+
+.reveal .final-slide .author-credit {
+    font-family: var(--r-code-font);
+    font-size: 0.9em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2.4em;
+}
+
+#presentation-footer {
+    position: fixed;
+    bottom: 36px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+#presentation-footer .page-number,
+#presentation-footer .footer-mark {
+    font-family: var(--r-code-font);
+    font-size: 0.85em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.reveal img {
+    border: none;
+    box-shadow: none;
+    background: none;
+}
+
+.reveal blockquote {
+    background: transparent;
+    border-left: 6px solid var(--amber);
+    padding: 0.2em 0 0.2em 0.8em;
+    margin: 0.8em 0;
+    font-style: normal;
+    color: var(--ink);
+}
+
+.reveal .highlight {
+    color: var(--lime);
+    font-weight: 700;
+}
+
+.reveal .warning {
+    color: var(--amber);
+    font-weight: 700;
+}
+
+.reveal section.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.reveal .two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+    align-items: start;
+}
+
+.reveal .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+    margin-top: 1.4em;
+}
+
+.reveal .comparison > div {
+    padding: 1.3em 1.4em;
+    border-radius: 0;
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-left: 6px solid var(--lime);
+}
+
+.reveal .comparison > div:last-child {
+    border-left-color: var(--amber);
+}
+
+.reveal .comparison h3 {
+    font-family: var(--r-code-font);
+    font-size: 0.85em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.reveal .benefits-list {
+    list-style: none;
+    counter-reset: benefits;
+    margin: 0.6em 0 0 0;
+    padding: 0;
+}
+
+.reveal .benefits-list li {
+    counter-increment: benefits;
+    position: relative;
+    padding-left: 2.4em;
+    margin-bottom: 0.38em;
+    font-size: 1.12em;
+}
+
+.reveal .benefits-list li::before {
+    content: counter(benefits);
+    position: absolute;
+    left: 0;
+    top: 0.05em;
+    width: 1.6em;
+    height: 1.6em;
+    background: var(--lime);
+    color: var(--bg);
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--r-heading-font);
+    font-weight: 700;
+    font-size: 0.85em;
+}
+
+.reveal .eyebrow {
+    font-family: var(--r-code-font);
+    font-size: 0.62em;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 0.45em;
+}
+
+.reveal .eyebrow.warning {
+    display: inline-block;
+    background: var(--amber);
+    color: var(--bg);
+    padding: 0.28em 0.7em 0.2em;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    margin-bottom: 0.7em;
+}
+
+.reveal .three-grid,
+.reveal .four-grid {
+    display: grid;
+    gap: 0.9em;
+    margin-top: 0.9em;
+}
+
+.reveal .three-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.reveal .four-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+.reveal .card {
+    padding: 1em 1.15em;
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-left: 6px solid var(--lime);
+    border-radius: 0;
+    text-align: left;
+}
+
+.reveal .card.amber {
+    border-left-color: var(--amber);
+}
+
+.reveal .card h3 {
+    font-size: 1.25em;
+    margin: 0 0 0.35em 0;
+    font-family: var(--r-code-font);
+    color: var(--lime);
+}
+
+.reveal .card.amber h3 {
+    color: var(--amber);
+}
+
+.reveal .card p,
+.reveal .card li {
+    font-size: 1em;
+    margin: 0;
+    color: var(--ink);
+    font-weight: 500;
+}
+
+.reveal .card .kicker {
+    font-family: var(--r-code-font);
+    font-size: 0.68em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 0.35em;
+}
+
+.reveal .card.amber .kicker {
+    color: var(--amber);
+}
+
+.reveal .stat {
+    font-family: var(--r-heading-font);
+    font-size: 3.4em;
+    line-height: 0.9;
+    color: var(--lime);
+    margin: 0.15em 0 0.1em;
+}
+
+.reveal .stat.amber {
+    color: var(--amber);
+}
+
+.reveal .steps .card {
+    margin-bottom: 0.55em;
+    display: grid;
+    grid-template-columns: 3.2em 1fr;
+    gap: 0.8em;
+    align-items: start;
+}
+
+.reveal .steps .num {
+    font-family: var(--r-heading-font);
+    font-size: 1.8em;
+    color: var(--lime);
+    line-height: 1;
+}
+
+.reveal .kill {
+    font-family: var(--r-heading-font);
+    font-size: 1.6em;
+    color: var(--amber);
+    margin-top: 0.6em;
+}
