@@ -31,9 +31,12 @@
             </section>
         </div>
 
-        <div id="presentation-footer">
-            <span class="footer-mark">postgres-schema</span>
-            <span class="page-number"></span>
+        <div id="page-frame" aria-hidden="true">
+            <div class="page-header">
+                <span class="page-no">page <b class="n">1</b> of <b class="total"></b></span>
+                <span class="pointers"></span>
+                <span class="section"></span>
+            </div>
         </div>
     </div>
 
@@ -56,7 +59,8 @@
         Reveal.initialize({
             hash: true,
             slideNumber: false,
-            transition: 'slide',
+            progress: false,
+            transition: 'fade',
             transitionSpeed: 'fast',
             backgroundTransition: 'fade',
             center: false,
@@ -70,15 +74,15 @@
         });
 
         Reveal.on('slidechanged', event => {
-            updateFooter(event.indexh + 1);
+            updatePageHeader(event.indexh + 1);
         });
 
         Reveal.on('ready', event => {
             fixCodeBlockClasses();
-            updateFooter(Reveal.getIndices().h + 1);
+            updatePageHeader(Reveal.getIndices().h + 1);
             setTimeout(() => {
                 fixCodeBlockClasses();
-                updateFooter(Reveal.getIndices().h + 1);
+                updatePageHeader(Reveal.getIndices().h + 1);
             }, 250);
         });
 
@@ -96,17 +100,27 @@
             });
         }
 
-        function updateFooter(currentSlide) {
-            const footer = document.getElementById('presentation-footer');
+        // Draws the heap page header: page number, one line pointer per slide,
+        // and the current slide's section name taken from its .eyebrow.
+        function updatePageHeader(currentSlide) {
+            const header = document.querySelector('#page-frame .page-header');
             const totalSlides = Reveal.getTotalSlides();
-            const pageNumber = footer.querySelector('.page-number');
+            const pointers = header.querySelector('.pointers');
+            const section = header.querySelector('.section');
+            const eyebrow = Reveal.getCurrentSlide().querySelector('.eyebrow');
 
-            if (currentSlide === 1 || currentSlide === totalSlides) {
-                footer.style.display = 'none';
-            } else {
-                footer.style.display = 'flex';
-                pageNumber.textContent = `${currentSlide} / ${totalSlides}`;
-            }
+            header.querySelector('.n').textContent = currentSlide;
+            header.querySelector('.total').textContent = totalSlides;
+
+            pointers.replaceChildren(...Array.from({ length: totalSlides }, (_, i) => {
+                const tick = document.createElement('i');
+                if (i + 1 < currentSlide) tick.className = 'used';
+                if (i + 1 === currentSlide) tick.className = 'current';
+                return tick;
+            }));
+
+            section.textContent = eyebrow ? eyebrow.textContent : '';
+            section.classList.toggle('danger', !!eyebrow && eyebrow.classList.contains('warning'));
         }
     </script>
 </body>

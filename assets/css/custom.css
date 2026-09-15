@@ -1,21 +1,38 @@
 @import url('../fonts/FantasqueSansMono.css');
-@import url('../fonts/Dosis.css');
-@import url('../fonts/Agdasima.css');
+
+/* Archivo, variable in weight and width. SIL Open Font License. */
+@font-face {
+    font-family: 'Archivo';
+    src: url('../fonts/archivo/Archivo-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-stretch: 62% 125%;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: 'Archivo';
+    src: url('../fonts/archivo/Archivo-Italic-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-stretch: 62% 125%;
+    font-style: italic;
+    font-display: block;
+}
 
 .reveal {
     --r-code-font: 'Fantasque Sans Mono', monospace;
-    --r-main-font: 'Dosis', sans-serif;
-    --r-heading-font: 'Agdasima', sans-serif;
+    --r-main-font: 'Archivo', sans-serif;
+    --r-heading-font: 'Archivo', sans-serif;
 }
 
 pre[class*="language-"] {
-    margin: 20px 0 !important;
+    margin: 0.5em 0 !important;
     padding: 0 !important;
-    border: 1px solid #2A322E !important;
-    border-radius: 0 !important;
+    border: none !important;
+    border-radius: 3px !important;
 
     code {
-        font-size: 0.72em !important;
+        font-size: 0.66em !important;
         min-height: auto !important;
     }
 }

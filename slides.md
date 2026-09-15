@@ -1,22 +1,20 @@
-<!-- .slide: class="center title-slide" -->
+<!-- .slide: class="title-slide" -->
 
-<div class="subtitle">15 minutes · for Ruby developers who ship with coding agents</div>
+<div class="subtitle">A 15-minute talk for Ruby developers who ship with coding agents</div>
 
-# What belongs in your<br>PostgreSQL<br><span class="hit">skills file</span><span class="cursor"></span>
+# What belongs in your<br>PostgreSQL<br>skills file
 
-<div class="date">Konstantin Gredeskoul · kig.re</div>
+<div class="date">Konstantin Gredeskoul, kig.re</div>
 
 Note: [0:00, 30 seconds] Your coding agent writes a lot of your migrations now. This talk is about the file that tells it how. I start with the one question every other rule depends on, then walk through the file I use, rule by rule. You can copy the structure tonight.
 
 ---
 
-<!-- .slide: data-auto-animate -->
-
-<div class="eyebrow" data-id="step-zero">Step zero</div>
+<div class="eyebrow">Step zero</div>
 
 ## Which database are you building?
 
-<div class="four-grid rise">
+<div class="four-grid">
 
 <div class="card">
 
@@ -58,9 +56,7 @@ Note: [0:30 to 1:30] Before any rule about indexes or keys, answer one question.
 
 ---
 
-<!-- .slide: data-auto-animate -->
-
-<div class="eyebrow" data-id="step-zero">Step zero</div>
+<div class="eyebrow">Step zero</div>
 
 ## The answer changes the rules
 
@@ -129,7 +125,7 @@ Note: [2:45 to 3:45] Why a file at all? Because review does not scale. My own ou
 
 ## A short trigger file, and a long reference file
 
-<div class="three-grid rise">
+<div class="three-grid">
 
 <div class="card">
 
@@ -169,7 +165,7 @@ Note: [3:45 to 4:45] The file has three parts. The description in the YAML heade
 
 ---
 
-<div class="eyebrow warning">Rule 1 · Migrations</div>
+<div class="eyebrow warning">Rule 1: migrations</div>
 
 ## A migration can take your site down before it runs
 
@@ -216,7 +212,7 @@ Note: [4:45 to 6:00] Rule one. Treat a migration as a production operation. You 
 
 ---
 
-<div class="eyebrow warning">Rule 2 · NOT NULL</div>
+<div class="eyebrow warning">Rule 2: NOT NULL</div>
 
 ## Add NOT NULL in three migrations, not one
 
@@ -254,11 +250,11 @@ Note: [6:00 to 7:00] Rule two. Adding a column with a default is safe since Post
 
 ---
 
-<div class="eyebrow warning">Rules 3, 5, 6, 8</div>
+<div class="eyebrow warning">Rules 3, 5, 6, and 8</div>
 
 ## Four rules that fit on one line each
 
-<div class="four-grid rise">
+<div class="four-grid">
 
 <div class="card">
 
@@ -298,7 +294,7 @@ Note: [7:00 to 8:00] These four are short, and you probably know them. They stil
 
 ---
 
-<div class="eyebrow warning">Rule 4 · Primary keys</div>
+<div class="eyebrow warning">Rule 4: primary keys</div>
 
 ## Use uuidv7 keys, and know what they reveal
 
@@ -344,7 +340,7 @@ Note: [8:00 to 9:00] Rule four. A primary key carries no business meaning and is
 
 ---
 
-<div class="eyebrow warning">Rule 7 · Soft deletes</div>
+<div class="eyebrow warning">Rule 7: soft deletes</div>
 
 ## Soft deletes need partial indexes. The index has a cost.
 
@@ -379,7 +375,7 @@ Note: [9:00 to 10:15] Rule seven, and the one that surprised me. If you soft del
 
 ---
 
-<div class="eyebrow warning">Indexes</div>
+<div class="eyebrow">Indexes</div>
 
 ## Order index columns: equality, then range, then sort
 
@@ -423,7 +419,7 @@ Note: [10:15 to 11:15] This is the one index rule worth carrying in your head. P
 
 ## Everything else goes in the reference file
 
-<div class="three-grid rise">
+<div class="three-grid">
 
 <div class="card">
 
@@ -497,7 +493,59 @@ Note: [12:30 to 13:30] Here is the recipe. Start with the class, because every r
 
 ---
 
-<!-- .slide: class="center final-slide" -->
+<div class="eyebrow">Bonus</div>
+
+## But Wait, There is more!
+
+<p class="lede">How I run my Software Team</p>
+
+<div class="three-grid">
+
+<div class="card">
+
+<div class="kicker">Installer</div>
+
+### agentilda-ai-setup
+
+Installs skills, plugins, commands, and hooks for any agent. Take only the parts you want, from any repo.
+
+<p class="repo"><a href="https://github.com/kigster/agentilda-ai-setup">github.com/kigster/agentilda-ai-setup</a></p>
+
+</div>
+
+<div class="card">
+
+<div class="kicker">Ruby gem, installs the <code>tilda</code> CLI</div>
+
+### agentilda
+
+Does most of the work. It writes and refines a spec, turns it into a plan, builds it, opens the PR, and loops on review until it is approved.
+
+`tilda install skills` teaches your agent to use it.
+
+<p class="repo"><a href="https://github.com/kigster/agentilda">github.com/kigster/agentilda</a></p>
+
+</div>
+
+<div class="card">
+
+<div class="kicker">Ruby gem, installs the <code>alo</code> CLI</div>
+
+### agent-lock
+
+Lets concurrent agents lock part of the tree to themselves. It uses local Redis when it can, and the file system when it cannot.
+
+<p class="repo"><a href="https://github.com/kigster/agent-lock">github.com/kigster/agent-lock</a></p>
+
+</div>
+
+</div>
+
+Note: [13:30 to 14:30] One more thing, if you want to see how the skill file fits into a bigger setup. agentilda-ai-setup installs skills, plugins, commands, and hooks for whichever agent you use, and lets you pick only the parts you want from other repos. agentilda is the Ruby gem that does the heavy lifting. Its tilda command takes a spec, refines it, plans it, builds it, opens a pull request, and runs review until the work is approved. Run tilda install skills and your agent learns how to use it. agent-lock is the small one I cannot live without. I run ten agents at once, and it lets each of them lock the part of the tree it is writing, with Redis or the file system underneath.
+
+---
+
+<!-- .slide: class="final-slide" -->
 
 # Thanks
 
@@ -510,6 +558,6 @@ Note: [12:30 to 13:30] Here is the recipe. Start with the class, because every r
   <img src="assets/img/kig.jpeg" alt="Konstantin Gredeskoul" class="author-photo">
 </div>
 
-<div class="author-credit"><a href="https://kig.re/2026/08/19/condensing-twenty-years-of-wisdom-in-one-markdown.html">kig.re · Condensing twenty years of wisdom in one markdown</a></div>
+<div class="author-credit"><a href="https://kig.re/2026/08/19/condensing-twenty-years-of-wisdom-in-one-markdown.html">Condensing twenty years of wisdom in one markdown, on kig.re</a></div>
 
-Note: [13:30 to 15:00] The whole file is in that post. Take it, argue with it, and write your own. I would like to hear the arguments, especially if you measured a HOT number different from 174.
+Note: [14:30 to 15:00] The whole file is in that post. Take it, argue with it, and write your own. I would like to hear the arguments, especially if you measured a HOT number different from 174.
