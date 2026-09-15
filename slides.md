@@ -1,114 +1,28 @@
 <!-- .slide: class="center title-slide" -->
 
-<div class="subtitle">15 min · Rails seniors · you already know concurrent indexes</div>
+<div class="subtitle">15 minutes · for Ruby developers who ship with coding agents</div>
 
-# What belongs in your<br>PostgreSQL<br><span class="hit">skills file.</span>
+# What belongs in your<br>PostgreSQL<br><span class="hit">skills file</span><span class="cursor"></span>
 
-<div class="date">kig.re · twenty years in one markdown</div>
+<div class="date">Konstantin Gredeskoul · kig.re</div>
 
-Note: The file is public. August 2026, kig.re. Concurrent indexes, foreign keys, timestamptz. You have heard those. They still get a line in SKILL.md because agents have not. This talk is the other half, and the reason the file exists at all.
-
----
-
-<div class="eyebrow">Why the file exists</div>
-
-## If you cannot review the output, constrain the input.
-
-<div class="four-grid">
-
-<div class="card">
-
-<div class="kicker">500x THE CODE</div>
-
-Working code. My rules. Tests on top. The review bandwidth of a human did not go up 500x. It went up 0x.
-
-</div>
-
-<div class="card">
-
-<div class="kicker">TASTE, UPSTREAM</div>
-
-Move judgment out of the diff and into the context the agent reads before it writes a line.
-
-</div>
-
-<div class="card amber">
-
-<div class="kicker">DO NOT CURL PIPE BASH</div>
-
-A markdown file that reprograms the thing writing your code deserves more scrutiny than a transitive npm dep. Write your own.
-
-</div>
-
-<div class="card amber">
-
-<div class="kicker">TONIGHT</div>
-
-FIFO locks. HOT vs partials. Wraparound folklore. STI FKs that lie. Classify first.
-
-</div>
-
-</div>
-
-Note: This is the post. I have become the single-threaded process in an embarrassingly parallel system. The only leverage that scales is taste, written down. When the agent reaches for concurrently and lock_timeout and amount_cents without being asked, that is not the model being clever. That is me being complimented by my own reflection. Still counts. The rest of the slides are the rules I had to write because the model has the blog post and not the measurement.
+Note: [0:00, 30 seconds] Your coding agent writes a lot of your migrations now. This talk is about the file that tells it how. I start with the one question every other rule depends on, then walk through the file I use, rule by rule. You can copy the structure tonight.
 
 ---
 
-<div class="eyebrow">File layout</div>
+<!-- .slide: data-auto-animate -->
 
-## Thin trigger. Fat reference. The weird stuff in both.
+<div class="eyebrow" data-id="step-zero">Step zero</div>
 
-<div class="three-grid">
+## Which database are you building?
 
-<div class="card">
-
-<div class="kicker">TRIPWIRE</div>
-
-### SKILL.md
-
-When to load. Classify first. The rules that fail silently. Then stop.
-
-</div>
-
-<div class="card">
-
-<div class="kicker">THE BODY</div>
-
-### practices.md
-
-HOT, FIFO, uuidv7 locality, STI, money, pooling. Read it before writing schema.
-
-</div>
-
-<div class="card">
-
-<div class="kicker">FOLKLORE</div>
-
-### autovacuum.md
-
-Wraparound is not what you were told. Read it before you touch a knob.
-
-</div>
-
-</div>
-
-The YAML description is when to open the file. Summarize the workflow there and the agent will never open the file.
-
-Note: Same shape as before. SKILL.md is a tripwire, not a blog post. The unusual rules have to be named in SKILL.md, because those are the ones an agent will skip under time pressure. The measurements and the folklore live in references. Lazy load. Do not dump four hundred lines into every chat.
-
----
-
-<div class="eyebrow">Step zero. Not optional.</div>
-
-## Classify the database. Write it in AGENTS.md.
-
-<div class="four-grid">
+<div class="four-grid rise">
 
 <div class="card">
 
 ### PG-lax
 
-Games, social. Physical deletes. ON DELETE CASCADE. Speed over strictness.
+A game or a social app. A lost row costs little. Speed matters more than strictness.
 
 </div>
 
@@ -116,7 +30,7 @@ Games, social. Physical deletes. ON DELETE CASCADE. Speed over strictness.
 
 ### PG-traditional
 
-E-commerce, PII. Integrity matters. Delete strategy is a production decision.
+An online store, or an app with a lot of user data. Integrity saves you support tickets.
 
 </div>
 
@@ -124,7 +38,7 @@ E-commerce, PII. Integrity matters. Delete strategy is a production decision.
 
 ### PG-strict
 
-Money, taxes, health. Logical deletes only. Immutability. Audit trails.
+Money, taxes, health records. A mistake costs real money, and auditors will ask.
 
 </div>
 
@@ -132,420 +46,470 @@ Money, taxes, health. Logical deletes only. Immutability. Audit trails.
 
 ### PG-analytics
 
-Warehouse. Materialized views. Batch ingest. Rare deletes. Long queries.
+A data warehouse. Few users, long queries, batch imports, materialized views.
 
 </div>
 
 </div>
 
-<div class="kill">Skip this and the agent CASCADES a ledger.</div>
+<p class="fragment">Your agent cannot guess this from your table names. <strong>You have to tell it.</strong></p>
 
-Note: This is the one page the rest of the file is illegal without. Soft deletes, ON DELETE, whether FOR UPDATE is ceremony or the baseline, even whether money rules apply. Ask, or read it from the spec. Record it in AGENTS.md. Do not infer it from the table names and keep going. An agent that skips classification will apply PG-strict to a game, or CASCADE to a ledger. Seniors think they already classified it. They have not written it down, so the agent has not either.
+Note: [0:30 to 1:30] Before any rule about indexes or keys, answer one question. What kind of database is this? I use four classes. Lax is a game or a social app, where a missing row is an annoyance. Traditional is an online store, where referential integrity saves you from customer complaints. Strict is money, taxes, and health records, where a mistake is an audit finding. Analytics is a warehouse with a few people running long queries. You probably know which one you run. Your agent does not, and it will not ask unless the file tells it to.
 
 ---
 
-<div class="eyebrow warning">The wait, not the statement</div>
+<!-- .slide: data-auto-animate -->
 
-## The migration never ran. The site is down.
+<div class="eyebrow" data-id="step-zero">Step zero</div>
+
+## The answer changes the rules
+
+<table class="class-table">
+<thead>
+<tr><th></th><th>PG-lax</th><th>PG-traditional</th><th class="hot">PG-strict</th><th>PG-analytics</th></tr>
+</thead>
+<tbody>
+<tr class="fragment"><td>Deletes</td><td>Physical</td><td>Decide per table</td><td class="hot">Logical only, <code>deleted_at</code></td><td>Rare</td></tr>
+<tr class="fragment"><td><code>ON DELETE</code></td><td><code>CASCADE</code></td><td>Stated on every key</td><td class="hot">Custom, sets <code>deleted_at</code></td><td>Rarely matters</td></tr>
+<tr class="fragment"><td>Row locking</td><td><code>lock_version</code> is fine</td><td>Where money moves</td><td class="hot"><code>FOR UPDATE</code> by default</td><td>Few writers</td></tr>
+</tbody>
+</table>
+
+<div class="fragment">
+
+```markdown
+<!-- AGENTS.md -->
+Database class: PG-strict. Logical deletes only. Ask before any physical DELETE.
+```
+
+</div>
+
+<div class="kill fragment">Skip this line and your agent adds ON DELETE CASCADE to a ledger.</div>
+
+Note: [1:30 to 2:45] Here is why the class comes first. The same question gets four different answers. Should a delete remove the row? In a game, yes. In a ledger, never. What happens to child rows when a parent goes away? Cascade in a game, a custom soft delete in a bank. Do you lock rows before you update a balance? In a strict app, always. So the first rule in my skill says: ask the human for the class, or read it from the spec, and write it in AGENTS.md. One line. Every later decision reads it. Without that line, an agent will happily put a cascading delete on your ledger table.
+
+---
+
+<div class="eyebrow">Why write it down</div>
+
+## Your agent writes code faster than you can review it
 
 <div class="two-columns">
 
 <div>
 
-strong_migrations catches dangerous SQL. It does not catch the queue.
+<div class="gap-chart">
+<div class="gap-row"><span class="gap-label">Code written</span><div class="gap-bar"><div class="gap-fill"></div></div><span class="gap-num">~500x</span></div>
+<div class="gap-row"><span class="gap-label">Code reviewed</span><div class="gap-bar"><div class="gap-fill flat"></div></div><span class="gap-num amber">1x</span></div>
+</div>
 
-ALTER TABLE needs ACCESS EXCLUSIVE. If anything is reading the table, the ALTER waits.
+So I moved my judgment to the place the agent reads before it writes the first line: a skill file.
 
-Lock requests are FIFO. Every SELECT that arrives after you queued, queues behind you.
+<p class="fragment">When the agent adds <code>lock_timeout</code> without being asked, the file did its job.</p>
 
-<div class="kill">You changed nothing. You still took production down.</div>
+</div>
+
+<div class="card amber">
+
+<div class="kicker">Write your own</div>
+
+A skill file changes the code your agent writes. Read someone else's file as carefully as a new gem with production access.
+
+Better, write yours from incidents you lived through. You know things a downloaded file does not.
+
+</div>
+
+</div>
+
+Note: [2:45 to 3:45] Why a file at all? Because review does not scale. My own output went up about five hundred times. My review time did not. The only thing that scales is taste that you wrote down, in the context the agent loads before it starts. A word of caution. Skill files are the new copy and paste from the internet. A markdown file that tells an agent how to write your migrations deserves more scrutiny than a gem, not less. Use mine for ideas. Then write your own, from the outages you remember.
+
+---
+
+<div class="eyebrow">How the file is built</div>
+
+## A short trigger file, and a long reference file
+
+<div class="three-grid rise">
+
+<div class="card">
+
+<div class="kicker">The YAML description</div>
+
+### When to load
+
+Lists the words that should load the skill: `migration`, `add_index`, `uuidv7`, `deleted_at`, `ON DELETE`.
+
+</div>
+
+<div class="card">
+
+<div class="kicker">SKILL.md, about 80 lines</div>
+
+### What never to miss
+
+Step zero, then eight rules that fail silently. Then it tells the agent to read the reference.
+
+</div>
+
+<div class="card">
+
+<div class="kicker">references/practices.md</div>
+
+### Why, in detail
+
+The explanations and the measurements. The agent reads it only when it designs schema.
+
+</div>
+
+</div>
+
+<p class="fragment">The description says <em>when</em> to load the file. If it summarizes the rules, the agent skips the file.</p>
+
+Note: [3:45 to 4:45] The file has three parts. The description in the YAML header decides when the agent loads the skill, so it lists trigger words. SKILL.md is short. It holds step zero and the rules whose violation passes code review and fails later in production. Everything else lives in a reference file that the agent opens only when it needs it. That keeps your context small. One trap: do not summarize the rules in the description. The agent reads the summary, decides it knows enough, and never opens the file. The next few slides are the eight rules from my SKILL.md.
+
+---
+
+<div class="eyebrow warning">Rule 1 · Migrations</div>
+
+## A migration can take your site down before it runs
+
+<div class="lock-queue">
+<div class="q holder"><b>SELECT</b><small>long report, holds a lock</small></div>
+<div class="q alter"><b>ALTER TABLE</b><small>waits for an exclusive lock</small></div>
+<div class="q sel" style="--i:1"><b>SELECT</b><small>waits</small></div>
+<div class="q sel" style="--i:2"><b>SELECT</b><small>waits</small></div>
+<div class="q sel" style="--i:3"><b>SELECT</b><small>waits</small></div>
+<div class="q sel" style="--i:4"><b>SELECT</b><small>waits</small></div>
+<div class="q sel" style="--i:5"><b>SELECT</b><small>waits</small></div>
+</div>
+
+<div class="two-columns">
+
+<div>
+
+PostgreSQL grants locks in order of arrival. Every `SELECT` that arrives after your `ALTER` waits behind it.
+
+`strong_migrations` checks the SQL. It does not check the wait.
 
 </div>
 
 <div>
 
 ```ruby
-execute "SET lock_timeout = '3s'"
-add_column :invoices, :currency, :string
+class AddCurrencyToInvoices < ActiveRecord::Migration[8.0]
+  def change
+    safety_assured do
+      execute "SET lock_timeout = '3s'"
+      add_column :invoices, :currency, :string
+    end
+  end
+end
 ```
 
-Fail in three seconds. Retry. A failed attempt that changed nothing costs you nothing.
-
 </div>
 
 </div>
 
-Note: Seniors know ACCESS EXCLUSIVE is a big lock. They do not know the outage is usually the wait. The ALTER has not started. It is sitting in the lock queue. Everything behind it is ACCESS SHARE, which cannot jump the line, because Postgres lock queues are FIFO. Set lock_timeout. Three seconds on a hot table. Fail fast. Retry in a loop. This has to be in the skill because every agent will write the add_column and none of them will set the timeout.
+<p class="fragment">Give up after three seconds and retry. Build every index <code>concurrently</code>, alone in its own migration.</p>
+
+Note: [4:45 to 6:00] Rule one. Treat a migration as a production operation. You know to build indexes concurrently. Fewer people know this one. ALTER TABLE needs an exclusive lock. If a report is reading the table, the ALTER cannot start, so it waits in the lock queue. PostgreSQL serves that queue in order, so every ordinary SELECT that arrives next waits behind your ALTER. Watch the queue grow. The migration has not changed anything yet, and the site is already down. The fix is one line: set lock_timeout to three seconds. If the lock is not free, the migration fails fast, changes nothing, and you retry. Put this line in the skill, because agents write the add_column and never the timeout.
 
 ---
 
-<div class="eyebrow warning">NOT NULL without a rewrite</div>
+<div class="eyebrow warning">Rule 2 · NOT NULL</div>
 
-## CHECK NOT VALID scans nothing. Then you prove it.
-
-A column default is safe on PG 11+. Adding null: false to an existing column is not. Three migrations.
+## Add NOT NULL in three migrations, not one
 
 <div class="steps">
 
-<div class="card">
+<div class="card fragment">
 <div class="num">01</div>
 <div>
-<div class="kicker">NOT VALID</div>
-<p>CHECK (currency IS NOT NULL) NOT VALID. ACCESS EXCLUSIVE. Scans nothing.</p>
+<div class="kicker">Add the check, read no rows</div>
+<p><code>ADD CONSTRAINT ... CHECK (currency IS NOT NULL) NOT VALID</code> takes a brief lock and scans nothing.</p>
 </div>
 </div>
 
-<div class="card">
+<div class="card fragment">
 <div class="num">02</div>
 <div>
-<div class="kicker">VALIDATE</div>
-<p>VALIDATE CONSTRAINT, own migration. Shares the table. Scans. Does not block writes.</p>
+<div class="kicker">Validate in a separate migration</div>
+<p><code>VALIDATE CONSTRAINT</code> scans the table while writes continue.</p>
 </div>
+</div>
+
+<div class="card fragment">
+<div class="num">03</div>
+<div>
+<div class="kicker">Set NOT NULL</div>
+<p>PostgreSQL 12 and later use the validated check as proof and skip the scan.</p>
+</div>
+</div>
+
+</div>
+
+`change_column_null` does it in one step, and holds the strongest lock while it reads every row.
+
+Note: [6:00 to 7:00] Rule two. Adding a column with a default is safe since PostgreSQL 11. Adding null false to an existing column is not. The agent will reach for change_column_null, which locks the whole table and scans every row to prove there are no nulls. On a big table, that is an outage. The safe version is three migrations. First, add a check constraint marked NOT VALID, which takes a brief lock and reads nothing. Second, validate it, which scans the table but lets writes continue. Third, set NOT NULL. PostgreSQL sees the validated check and skips the scan. Nobody remembers this at 11 at night, so write it down.
+
+---
+
+<div class="eyebrow warning">Rules 3, 5, 6, 8</div>
+
+## Four rules that fit on one line each
+
+<div class="four-grid rise">
+
+<div class="card">
+
+### schema_format = :sql
+
+`schema.rb` silently drops partial indexes, expression indexes, exclusion constraints, generated columns, and extensions.
+
 </div>
 
 <div class="card">
-<div class="num">03</div>
-<div>
-<div class="kicker">SET NOT NULL</div>
-<p>PG 12+ treats the validated CHECK as proof and skips the table rewrite.</p>
-</div>
-</div>
 
-</div>
+### timestamptz
 
-Note: The agent will reach for change_column_null. That rewrites the table. The dance is CHECK NOT VALID, which takes the lock and does no scan, then VALIDATE in a second migration, which scans while writes continue, then SET NOT NULL. Postgres 12 and later looks at the validated constraint and does not rewrite. Put the three steps in the skill. Nobody remembers this at 11pm.
-
----
-
-<div class="eyebrow warning">HOT vs the partial you were told to add</div>
-
-## Soft delete is still an UPDATE. It still makes dead tuples.
-
-<div class="two-columns">
-
-<div>
-
-A logical delete does not skip vacuum. MVCC writes a new row version. A million deleted_at stamps is a million dead tuples.
-
-What actually helps is a HOT update. The new version stays on the same page. Indexes are not touched. Only if you did not index the column you changed.
-
-<div class="kill">The partial index you wanted is the thing that kills HOT.</div>
+Rails still maps `t.datetime` to `timestamp`. Set `datetime_type = :timestamptz` in an initializer.
 
 </div>
 
 <div class="card amber">
 
-<div class="kicker">PG 18. 200 SOFT DELETES.</div>
+### Foreign keys, with ON DELETE
 
-<div class="stat">174</div>
-HOT. deleted_at in no index at all.
+Validations are not constraints. An unstated `ON DELETE` is a decision nobody made.
 
-<div class="stat amber">zero</div>
-HOT. With WHERE deleted_at IS NULL.
+</div>
 
-200 dead tuples either way. Keep the partial on PG-strict. Know the tax.
+<div class="card">
+
+### Vendor data in its own schema
+
+Stripe tables go in `stripe.*`, Plaid tables in `plaid.*`. Never in `public`.
 
 </div>
 
 </div>
 
-Note: This is the one that is backwards from intuition. HOT eligibility considers every column any index references, including a partial index predicate. Setting deleted_at from NULL to a timestamp changes the predicate, so the row must leave that index, so the update is not HOT. Measured on 18, with page headroom: 174 HOT without the partial, zero with it. Both still 200 dead tuples. For PG-strict you still want the partial. The read path dominates. The skill has to say the tradeoff, or the agent will skip the index to chase HOT, or add it and think vacuum went away.
+Note: [7:00 to 8:00] These four are short, and you probably know them. They still get a line in the skill, because the agent follows Rails defaults, and the Rails defaults are wrong here. schema.rb cannot represent a partial index, so switch to structure.sql. Rails still creates timestamp without time zone, so set the adapter's datetime type to timestamptz. Add a real foreign key on every reference, and write the ON DELETE behavior out, because the default is a choice nobody made. And when you mirror a vendor's data, such as Stripe webhooks, put it in its own schema so its table names never collide with yours.
 
 ---
 
-<div class="eyebrow warning">Selectivity is a tiebreaker</div>
+<div class="eyebrow warning">Rule 4 · Primary keys</div>
 
-## Equality, then range, then sort. In that order.
-
-<div class="two-columns">
-
-<div>
-
-(account_id, created_at) serves WHERE account_id = ? ORDER BY created_at DESC LIMIT 20.
-
-(created_at, account_id) serves it not at all.
-
-Most selective column first is the rule you were taught. It is the wrong rule.
-
-</div>
-
-<div class="card amber">
-
-<div class="kicker">RAILS MADE YOU FAT</div>
-
-add_reference already created (account_id).
-
-Three sprints later you add (account_id, created_at).
-
-Leftmost prefix. The first index is redundant. You never drop it.
-
-(account_id, created_at) and (account_id, status) are not redundant. Bitmap-AND, or a partial WHERE status = pending.
-
-</div>
-
-</div>
-
-Note: Access-pattern shape wins. Equality columns, then range, then the sort. Selectivity is what you use when two shapes are equal. Rails is why the catalog is fat: belongs_to auto-indexes the FK, then someone adds the composite and both live forever. pg_stat_user_indexes where idx_scan is 0 is the kill list. Put the order, and the leftover-index, in the skill. The agent will otherwise add both.
-
----
-
-<div class="eyebrow warning">v4 is a random leaf. v7 is not free.</div>
-
-## uuidv7 restores the right-hand insert. It also leaks created_at.
+## Use uuidv7 keys, and know what they reveal
 
 <div class="two-columns">
 
 <div>
 
 ```ruby
-create_table :boomerangs, id: :uuid,
+create_table :invoices, id: :uuid,
   default: -> { "uuidv7()" } do |t|
   t.timestamps
 end
 ```
 
-No extension since PG 13. PG 18 adds uuidv7(), with a 12-bit sub-millisecond fraction, monotonic inside one backend.
-
-v4 on a table bigger than shared_buffers is a page fault per insert. Pages split at fifty percent fill. The working set is the whole index.
+<div class="pages">
+<div class="pages-label">uuidv4: every insert touches a random, half-empty page</div>
+<div class="page-row v4">
+<i style="--d:3"></i><i style="--d:11"></i><i style="--d:6"></i><i style="--d:0"></i><i style="--d:14"></i><i style="--d:8"></i><i style="--d:2"></i><i style="--d:12"></i><i style="--d:5"></i><i style="--d:9"></i><i style="--d:1"></i><i style="--d:15"></i><i style="--d:7"></i><i style="--d:13"></i><i style="--d:4"></i><i style="--d:10"></i>
+</div>
+<div class="pages-label">uuidv7: inserts fill full pages at the end</div>
+<div class="page-row v7">
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="tail"></i>
+</div>
+</div>
 
 </div>
 
 <div class="card amber">
 
-<div class="kicker">THE TRADEOFF THAT ACTUALLY MATTERS</div>
+<div class="kicker">The tradeoff</div>
 
-The 8 extra bytes versus bigint are noise. The insert gap between v4 and v7 is routinely an order of magnitude.
+A uuidv7 shows when its row was created. With enough IDs from your URLs, anyone can estimate how fast you grow.
 
-v7 puts a timestamp in the ID. Anyone holding a URL knows when the row was born, and with enough IDs, your creation rate.
+If that matters, show a uuidv4 outside and keep the uuidv7 inside.
 
-If that timing is sensitive: v4 outside, v7 inside.
-
-varchar(36) is 37 bytes plus alignment. No.
+The extra 8 bytes over `bigint` do not matter. The insert speed does.
 
 </div>
 
 </div>
 
-Note: Do not spend this slide on "UUIDs hide your user count." Spend it on locality. v4 is uniform random, so every insert is a random B-tree leaf. v7 puts time in front and you get right-hand splits again, ninety percent fill, a hot tail that stays in cache. Postgres 18's uuidv7 stuffs a 12-bit sub-ms fraction after the millisecond, so it is monotonic in one backend, not merely ordered. The skill has to name the leak. Agents will reach for v7 as the default, which is correct for most apps, and they will not mention the disclosure unless you write it down.
+Note: [8:00 to 9:00] Rule four. A primary key carries no business meaning and is never composite. PostgreSQL 18 ships uuidv7 built in. Here is why it matters. A version 4 UUID is random, so every insert goes to a random page of the index. Once the index is bigger than memory, each insert reads a page from disk, and pages split half empty. That is the top row. Version 7 puts the time first, so inserts go to the end of the index, the way a bigserial does. That is the bottom row. The gap is often ten times on large tables. The cost: the ID reveals when the row was created. The skill has to name that tradeoff, or the agent will never mention it.
 
 ---
 
-<div class="eyebrow warning">Bonus track. For you, not the agent.</div>
+<div class="eyebrow warning">Rule 7 · Soft deletes</div>
 
-## Turning autovacuum off does not cause wraparound.
+## Soft deletes need partial indexes. The index has a cost.
 
 <div class="two-columns">
 
 <div>
 
-XID is unsigned 32-bit, cluster-wide. One counter. Not per table. Per table is only the age, relfrozenxid.
+In a PG-strict app, nearly every query says `WHERE deleted_at IS NULL`. A partial index covers only live rows, so it stays small.
 
-There is no free list. The counter marches. Freeze means "visible to everyone, stop asking." Since 9.4 that is a hint bit, not a magic xmin.
+A soft delete is still an `UPDATE`. It leaves a dead row version for vacuum.
 
-Anti-wraparound vacuum still launches at 200 million even if autovacuum is disabled. The manual says so.
-
-</div>
-
-<div class="card amber">
-
-<div class="kicker">WHAT ACTUALLY PINS THE HORIZON</div>
-
-idle in transaction in psql.
-
-A reporting query that never ends.
-
-An orphaned replication slot.
-
-A prepared xact nobody finished.
-
-<div class="kill">It does not enter single-user mode. Connect normally. Kill the snapshot. VACUUM.</div>
-
-</div>
-
-</div>
-
-Note: In the post this was the part I did not put in the skills file, because the machines already know it and you might not. That asymmetry should worry you slightly. The folk story is you turned autovacuum off and XIDs wrapped. Wrong. Postgres will force an anti-wraparound vacuum whether autovacuum is on or not. What stops freeze is an open snapshot. Escalation: 200 million forced vacuum, 40 million remaining a WARNING, 3 million remaining it refuses new XIDs. Reads still work. The docs warn you not to restart into single-user mode. Connect, find idle-in-transaction, drop the dead slot, VACUUM. If the table is 27 terabytes that vacuum still takes days. The dashboard query is age(relfrozenxid), not autovacuum settings.
-
----
-
-<div class="eyebrow warning">READ COMMITTED is weaker than it sounds</div>
-
-## Two SELECTs in one transaction can disagree.
-
-Each statement gets a fresh snapshot. Read the balance, compute, write it back: lost update, race as wide as your latency.
-
-<div class="three-grid">
-
-<div class="card">
-
-### FOR UPDATE
-
-Take the row as you read it. Rails: record.lock! This is the answer almost always.
+A HOT update skips the index writes. It works only when the update changes no indexed column, and the partial index's `WHERE` counts.
 
 </div>
 
 <div class="card amber">
 
-### SERIALIZABLE
+<div class="kicker">HOT updates out of 200 soft deletes, PostgreSQL 18</div>
 
-Genuinely correct. Fails at COMMIT. No retry loop means you moved the bug into an error class.
-
+<div class="hot-bars">
+<div class="hot-row"><span class="hot-label">No index on <code>deleted_at</code></span><div class="hot-bar"><div class="hot-fill" style="--w:87%"></div></div><span class="hot-num">174</span></div>
+<div class="hot-row"><span class="hot-label"><code>WHERE deleted_at IS NULL</code></span><div class="hot-bar"><div class="hot-fill" style="--w:0%"></div></div><span class="hot-num amber">0</span></div>
 </div>
 
-<div class="card">
-
-### lock_version
-
-Fine for a human clicking Save. Wrong for two jobs fighting a row. Retry storm.
+Both runs left 200 dead tuples. Keep the partial index on PG-strict. The reads matter more.
 
 </div>
 
 </div>
 
-Deadlocks are ordering. Always lock by ascending PK, parent before child. Session advisory locks and transaction pooling cannot share a room.
-
-Note: Seniors say we use transactions. They do not say READ COMMITTED is per statement. SERIALIZABLE in Postgres is real SSI, and it is useless without a retry loop on serialization failure. Optimistic locking is Rails default and it is the wrong tool under machine contention. Advisory locks: use the transaction-scoped variant, because session-scoped locks leak on process death and they are incompatible with pgBouncer transaction mode. Put FOR UPDATE as the default in the skill for PG-strict. Put the retry loop next to SERIALIZABLE so the agent cannot take the isolation level and skip the loop.
+Note: [9:00 to 10:15] Rule seven, and the one that surprised me. If you soft delete, put WHERE deleted_at IS NULL on nearly every index. The index covers only live rows, so it stays small and fast. But know the cost. A soft delete is an UPDATE, and every UPDATE leaves a dead row version for vacuum. A heap-only tuple update, HOT for short, avoids the index writes, but only if you changed no indexed column. The partial index predicate counts as indexed. I measured it on PostgreSQL 18: 174 HOT updates out of 200 without the partial index, zero with it. For a strict app, keep the index anyway. The skill states the tradeoff so the agent does not drop the index to chase HOT.
 
 ---
 
-<div class="eyebrow warning">The FK that does not mean what you think</div>
+<div class="eyebrow warning">Indexes</div>
 
-## Postgres will accept the FK. It will not accept the subclass.
+## Order index columns: equality, then range, then sort
 
 <div class="two-columns">
 
 <div>
 
-A polymorphic pair can never be a real foreign key. One FK targets one table. edible_id points at whichever table edible_type named. There is no SQL for that. Delegated types exist because of this.
+```sql
+WHERE account_id = ?
+ORDER BY created_at DESC
+LIMIT 20
+```
 
-STI is the opposite lie. One real table, one real PK. Other tables can FK onto carts.id. Postgres will let smoothies.banana_id point at a strawberry row. If that distinction matters, CHECK or a partial unique. Not a foreign key.
+<p class="fragment"><span class="chip">serves it</span> <code>(account_id, created_at)</code></p>
+
+<p class="fragment"><span class="chip amber">useless</span> <code>(created_at, account_id)</code></p>
+
+<p class="fragment">Selectivity only breaks a tie. The shape of the query decides.</p>
 
 </div>
 
 <div class="card amber">
 
-<div class="kicker">STORE BANANA. NOT Banana::Heirloom.</div>
+<div class="kicker">Rails leaves an extra index behind</div>
 
-Fully qualified class names in type are a multi-day data migration the day you rename a module.
+`add_reference` creates an index on `(account_id)`.
 
-find_sti_class. polymorphic_name. One lowercase token.
+Three sprints later, someone adds `(account_id, created_at)`. Now the first index is redundant, and nobody drops it.
 
-Index (edible_id, edible_type DESC) so like sits next to like.
-
-</div>
+Find the ones nobody uses: `pg_stat_user_indexes` where `idx_scan = 0`.
 
 </div>
 
-Note: This is the Rails-shaped landmine seniors still ship. They add a FK to the STI table and think the subclass is constrained. It is not. They store Shloopify::Checkout::Cart in type, then the company gets bought, and now you are rewriting millions of rows. One word tokens. Delegated types when you actually need a real FK per concrete table. The skill has to forbid class names in type columns, because that is the default Rails will write.
+</div>
+
+Note: [10:15 to 11:15] This is the one index rule worth carrying in your head. Put equality columns first, then range columns, then the sort column. The index on account ID and created at serves the query on the left. Reverse the columns and it serves nothing. You may have been taught to put the most selective column first. That only breaks a tie. And here is where Rails apps get heavy: belongs to creates a single-column index, and later someone adds the composite. The composite answers everything the single index did, so the single one is dead weight. Query pg_stat_user_indexes for indexes with zero scans. That is your list to drop.
 
 ---
 
-<div class="eyebrow warning">Three timeouts. Three different deaths.</div>
+<div class="eyebrow">The reference file</div>
 
-## They are not interchangeable. Put all three in the skill.
+## Everything else goes in the reference file
 
-<div class="three-grid">
+<div class="three-grid rise">
 
-<div class="card amber">
+<div class="card">
 
-### lock_timeout
+### Locking
 
-The ALTER is waiting. The world is queuing behind it. Three seconds. Fail. Retry.
+`READ COMMITTED` gives each statement a new snapshot. Use `FOR UPDATE` for read-then-write.
 
 </div>
 
 <div class="card">
 
-### statement_timeout
+### Money
 
-Per role, not per connection. app_web 30s. Jobs 10 minutes. Readonly 5. A 60 second web query is already a corpse holding a snapshot.
+`bigint` cents plus a `char(3)` currency. Never `float`.
+
+</div>
+
+<div class="card">
+
+### Timeouts
+
+`statement_timeout` per role: 30 seconds for web, longer for jobs.
+
+</div>
+
+<div class="card">
+
+### Pooling
+
+pgBouncer in transaction mode. About 16 to 20 server connections on 8 cores.
+
+</div>
+
+<div class="card">
+
+### STI types
+
+Store `banana` in `type`, not `Fruit::Banana`. A module rename then costs nothing.
 
 </div>
 
 <div class="card amber">
 
-### idle_in_transaction_session_timeout
+### Wraparound
 
-The psql session somebody left inside BEGIN. It blocks vacuum. It holds locks until the laptop sleeps. This is also how you pin wraparound.
-
-</div>
+An open snapshot blocks freezing. Turning autovacuum off does not.
 
 </div>
 
-ALTER ROLE, not SET in the boot path. Transaction pooling will drop your SET.
+</div>
 
-Note: Seniors set statement_timeout in database.yml and think they are done. lock_timeout is the migration. statement_timeout is the runaway SELECT that pins xmin. idle_in_transaction_session_timeout is the human. idle_session_timeout is extra for pooled roles. Set them on the role so nobody can forget, and so pgBouncer transaction mode does not throw away a session SET. The skill should show the three ALTER ROLE lines. Agents love a single timeout. That is not enough.
+Note: [11:15 to 12:30] SKILL.md stays short on purpose. The rest lives in the reference file, which the agent reads before it designs a schema. A few examples. Two SELECTs in one transaction can disagree, so read-modify-write needs FOR UPDATE. Money is integer cents with a currency code. Timeouts are set on the database role, so connection pooling cannot drop them. The pool on the database side is small, around twenty connections for eight cores. Store a short lowercase token in STI type columns so a module rename is not a data migration. And transaction ID wraparound comes from a snapshot someone left open, not from autovacuum being off. The whole file is in the blog post.
 
 ---
 
-<div class="eyebrow warning">Good intentions</div>
+<div class="eyebrow">Your turn</div>
 
-## Unicorn hit the memory ceiling. Then it took the database with it.
-
-<div class="two-columns">
-
-<div>
-
-Worker killer. OOM. Recycle the fat process before the box swaps. Sensible.
-
-They all hit the limit together. Master respawns them together.
-
-Each boot is Rails init: schema cache, type map, schema_migrations, a pool of connections, all against the primary.
-
-</div>
-
-<div class="card amber">
-
-<div class="kicker">THE STAMPEDE</div>
-
-N workers times pool size. Catalog queries. pg_attribute. Health checks fail. More restarts.
-
-<div class="kill">You protected the app box. You hammered Postgres. The site went down.</div>
-
-</div>
-
-</div>
-
-Jitter the recycle. Preload. Do not let boot open a full pool. The skill has to say this, because "restart it" looks like operations, not schema.
-
-Note: This is the one that looks like a sysadmin story until you watch pg_stat_activity. unicorn-worker-killer, or the Linux OOM killer, or a memory ceiling in the unit file. Good intentions. The workers leak, you cap them, they die, Unicorn master forks new ones. Rails initialization is not free. It talks to Postgres. A lot. Schema cache. Column types. Sometimes a SELECT from schema_migrations. And ActiveRecord opens the pool, not one connection, the pool. Twenty workers coming up at once is a hundred backends and a catalog storm on a primary that was already unhappy, which is why the workers were fat in the first place. Health check fails, more processes, more boots. The site is down and the dashboard says CPU on the database, not OOM on the app. Stagger the killer with jitter so they do not share a birthday. preload_app so boot is once. Checkout one connection at boot, not pool_size. pgBouncer so the stampede queues in the pooler, not in Postgres. Put it in the skill under pooling, or the agent will never connect a worker restart to a database outage.
-
----
-
-<div class="eyebrow">Copy this outline</div>
-
-## Steal the weird half. The hits are one-liners.
-
-Classify first. PG-lax, traditional, strict, analytics. Write it down.
+## Write your own file this week
 
 <ol class="benefits-list">
-<li>lock_timeout. FIFO. The wait is the outage.</li>
-<li>CHECK NOT VALID, VALIDATE, then SET NOT NULL.</li>
-<li>HOT vs WHERE deleted_at IS NULL. 174 and zero. Keep the partial anyway.</li>
-<li>Equality, range, sort. Drop the leftover add_reference index.</li>
-<li>uuidv7 for locality. Name the created-at leak.</li>
-<li>Wraparound: kill the snapshot. Do not restart into single-user.</li>
-<li>READ COMMITTED is per statement. SERIALIZABLE needs a retry loop.</li>
-<li>STI FKs do not constrain type. Store banana. Timeouts on the role.</li>
+<li class="fragment">Classify your database. Write the class in AGENTS.md.</li>
+<li class="fragment">Write a description that lists the words that should load the file.</li>
+<li class="fragment">Put the rules that fail silently in SKILL.md. Keep it under 100 lines.</li>
+<li class="fragment">Move the explanations and measurements to a reference file.</li>
+<li class="fragment">Add a rule each time an incident teaches you one.</li>
 </ol>
 
-Note: That is the skill. The greatest hits still get a line each so the agent does not skip concurrently, FKs, timestamptz, schema.sql. The body of the file is the measurements and the folklore. If a new Postgres release contradicts a line, stop and talk to the human. The skill is not a substitute for that conversation.
+<div class="kill fragment">Then run the unused-index query on production. I dare you.</div>
+
+Note: [12:30 to 13:30] Here is the recipe. Start with the class, because every rule depends on it. Write a description that triggers on the words you actually type. Keep SKILL.md short, and fill it with the rules whose failure is silent: the lock timeout, the three-step NOT NULL, the partial index tradeoff. Put the long explanations in a reference file. Then keep it alive. Each outage you survive is a line in the file. If a new PostgreSQL release contradicts a rule, the file tells the agent to stop and ask you. And yes, run the unused-index query. You will find something.
 
 ---
 
 <!-- .slide: class="center final-slide" -->
 
-# Thanks.
+# Thanks
 
 <div class="author-section">
   <div class="questions">
-    What did I get wrong.<br>
-    What did you measure.<br>
-    What folklore still walks.
+    What did I get wrong?<br>
+    What did you measure?<br>
+    What is in your file?
   </div>
   <img src="assets/img/kig.jpeg" alt="Konstantin Gredeskoul" class="author-photo">
 </div>
 
-<div class="author-credit"><a href="https://kig.re/2026/08/19/condensing-twenty-years-of-wisdom-in-one-markdown.html">kig.re/2026/08/19 · twenty years in one markdown</a></div>
+<div class="author-credit"><a href="https://kig.re/2026/08/19/condensing-twenty-years-of-wisdom-in-one-markdown.html">kig.re · Condensing twenty years of wisdom in one markdown</a></div>
 
-Note: The whole file is in that post, warts and empty headings included. Take it. Argue with it. Write your own. If we have a minute I want the arguments, especially if you have a HOT number that is not 174.
+Note: [13:30 to 15:00] The whole file is in that post. Take it, argue with it, and write your own. I would like to hear the arguments, especially if you measured a HOT number different from 174.
