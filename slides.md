@@ -10,6 +10,30 @@ Note: [0:00, 30 seconds] Your coding agent writes a lot of your migrations now. 
 
 ---
 
+<div class="eyebrow">First, a show of hands</div>
+
+## Six questions before I start
+
+<div class="quiz">
+
+<p class="fragment current-visible">Who writes code with AI as an assistant?</p>
+
+<p class="fragment current-visible">Who barely writes code any more? You spec it, the agent writes it, you review it.</p>
+
+<p class="fragment current-visible">Of that second group: who has read every <code>SKILL.md</code> they installed? Be honest.</p>
+
+<p class="fragment current-visible">Who is picky about what lands in <code>~/.claude/skills</code>?</p>
+
+<p class="fragment current-visible">Same question for your plugins, commands and workflows.</p>
+
+<p class="fragment current-visible">And who has written a skill, command or plugin they use every week?</p>
+
+</div>
+
+Note: [0:30 to 1:15] Six questions, hands up. One: who writes code with AI as an assistant? Two: who barely writes code any more, where you spec it, the agent writes it, and you review? Keep your hands up. Three: of that group, who has read every SKILL.md they installed? Be honest. Four: who is genuinely picky about what lands in their skills directory? Five: same question for plugins, commands and workflows, which nobody audits either. Six: who has written a skill or a command they use every week? Look around. That last group is small, and the rest of this talk is about joining it.
+
+---
+
 <div class="eyebrow">Step zero</div>
 
 ## Which database are you building?
