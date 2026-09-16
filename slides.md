@@ -545,6 +545,8 @@ Note: [13:00 to 13:50] Here is the recipe. Start with the class, because every r
 
 ## But Wait, There is more!
 
+<p style="float: right; margin-top: -100px;">Watch for <a href="https://dry-cli.tools">dry-cli.tools</a> coming online soon!</small>
+
 <p class="lede">How I run my Software Team</p>
 
 <div class="three-grid rise">
@@ -595,14 +597,15 @@ Note: [13:50 to 14:40] One more thing, if you want to see how the skill file fit
 
 <!-- .slide: class="center final-slide" -->
 
-# Thanks
+# Thanks! | <small><a href="https://kig.re/skills">kig.re</a></small>
 
 <div class="author-section">
   <div class="questions">
-     Did you get anyting out of this?<br>
+     Was this helpful?<br>
      What could I have done better?<br>
-     I am wrapping bootstrapped startup... so<br>
-     Know any awesome teams that need senior talent?<br>
+      <small>Download my PG skill tomorrow from <a href="https://kig.re/skills">kig.re/skills</a></small>
+     <hr>
+     I will soon be for hire!<br>
      (415) 265 1054 (Talk to me!)
     </div>
   <img src="assets/img/kig.jpeg" alt="Konstantin Gredeskoul" class="author-photo">
