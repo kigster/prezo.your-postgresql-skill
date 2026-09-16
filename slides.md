@@ -2,7 +2,7 @@
 
 <div class="subtitle">A 15-minute talk for Ruby developers who ship with coding agents</div>
 
-# What belongs in your<br>PostgreSQL<br><span class="hit">skills file</span><span class="cursor"></span>
+# What belongs in your<br><span class="highlight">PostgreSQL<br></span> SKILLS.md file</span><span class="cursor"></span>
 
 <div class="date">Konstantin Gredeskoul, kig.re</div>
 
@@ -12,21 +12,24 @@ Note: [0:00, 30 seconds] Your coding agent writes a lot of your migrations now. 
 
 <div class="eyebrow">First, a show of hands</div>
 
-## Six questions before I start
+## But please allow me to ask a few questions of you first...
 
-<div class="quiz">
+<div class="quiz" style="padding-top: 100px">
 
-<p class="fragment current-visible">Who writes code with AI as an assistant?</p>
+<p class="fragment current-visible">Raise your hand if, assuming you are a software engineer, you code regularly with an AI as an assistant? <em>But you write most of the code...</em></p>
 
-<p class="fragment current-visible">Who barely writes code any more? You spec it, the agent writes it, you review it.</p>
+<p class="fragment current-visible">Raise your hand if you barely write any code any more. You write specs, the AI takes over, and <em>maybe you do manual reviews.</em></p>
 
-<p class="fragment current-visible">Of that second group: who has read every <code>SKILL.md</code> they installed? Be honest.</p>
+<p class="fragment current-visible">Now, raise your hand if you barely write any code any more. <br/>
+  You write specs, the AI workflow with a harness over, <em>AI does reviews, merges and deploys.<br></em></p>
 
-<p class="fragment current-visible">Who is picky about what lands in <code>~/.claude/skills</code>?</p>
+<p style="margin-left: 40px;" class="fragment current-visible">😱 Now, a trick question.</p>
 
-<p class="fragment current-visible">Same question for your plugins, commands and workflows.</p>
+<p style="margin-left: 40px;" class="fragment current-visible">Have you personally (or maybe someone else at your work) read every single <code>SKILL.md</code>, plugin, command, script your AI environment contains?</p>
 
-<p class="fragment current-visible">And who has written a skill, command or plugin they use every week?</p>
+<p class="fragment current-visible">Who is picky about what lands in <code>~/.claude/skills</code> or <code>~/.agents/skills</code>?</p>
+
+<p class="fragment current-visible">Anyone has written a skill, command or plugin they use every week?</p>
 
 </div>
 
@@ -278,6 +281,8 @@ Note: [6:00 to 7:00] Rule two. Adding a column with a default is safe since Post
 
 ---
 
+<!-- .slide: class="dense" -->
+
 <div class="eyebrow warning">Rules 3, 5, 6, and 8</div>
 
 ## Four rules that fit on one line each
@@ -296,7 +301,7 @@ Note: [6:00 to 7:00] Rule two. Adding a column with a default is safe since Post
 
 ### timestamptz
 
-Rails still maps `t.datetime` to `timestamp`. Set `datetime_type = :timestamptz` in an initializer.
+`timestamp` stores no zone, so the same value means a different instant to every reader, and daylight saving silently moves it. `timestamptz` stores one absolute instant and renders it in the session's zone. Rails still picks the wrong one: set `datetime_type = :timestamptz`.
 
 </div>
 
@@ -304,7 +309,7 @@ Rails still maps `t.datetime` to `timestamp`. Set `datetime_type = :timestamptz`
 
 ### Foreign keys, with ON DELETE
 
-Validations are not constraints. An unstated `ON DELETE` is a decision nobody made.
+`CASCADE` deletes the children, `RESTRICT` refuses, `SET NULL` orphans them, and `NO ACTION` is the default nobody chose. PG-lax takes `CASCADE`. PG-strict takes `RESTRICT` and propagates `deleted_at` in code, because a ledger row outlives its parent.
 
 </div>
 
@@ -321,6 +326,8 @@ Stripe tables go in `stripe.*`, Plaid tables in `plaid.*`. Never in `public`.
 Note: [7:00 to 8:00] These four are short, and you probably know them. They still get a line in the skill, because the agent follows Rails defaults, and the Rails defaults are wrong here. schema.rb cannot represent a partial index, so switch to structure.sql. Rails still creates timestamp without time zone, so set the adapter's datetime type to timestamptz. Add a real foreign key on every reference, and write the ON DELETE behavior out, because the default is a choice nobody made. And when you mirror a vendor's data, such as Stripe webhooks, put it in its own schema so its table names never collide with yours.
 
 ---
+
+<!-- .slide: class="dense" -->
 
 <div class="eyebrow warning">Rule 4: primary keys</div>
 
@@ -350,15 +357,25 @@ end
 
 </div>
 
+<div>
+
+<div class="card">
+
+<div class="kicker">What you get instead with serial keys</div>
+
+Rails' old default, `integer`, stops at 2.1 billion. `bigserial` never runs out, and both are fast and compact. Both also publish your business: `/users/10000` tells a competitor how many customers you have, tells the customer they are number ten thousand, and invites anyone to walk `/invoices/1`, `/invoices/2` and see what they can read.
+
+</div>
+
 <div class="card amber">
 
-<div class="kicker">The tradeoff</div>
+<div class="kicker">The uuidv7 tradeoff</div>
 
 A uuidv7 shows when its row was created. With enough IDs from your URLs, anyone can estimate how fast you grow.
 
-If that matters, show a uuidv4 outside and keep the uuidv7 inside.
+If that matters, show a uuidv4 outside and keep the uuidv7 inside. The extra 8 bytes over `bigint` do not matter. The insert speed does.
 
-The extra 8 bytes over `bigint` do not matter. The insert speed does.
+</div>
 
 </div>
 
@@ -368,6 +385,8 @@ Note: [8:00 to 9:00] Rule four. A primary key carries no business meaning and is
 
 ---
 
+<!-- .slide: class="dense" -->
+
 <div class="eyebrow warning">Rule 7: soft deletes</div>
 
 ## Soft deletes need partial indexes. The index has a cost.
@@ -376,24 +395,24 @@ Note: [8:00 to 9:00] Rule four. A primary key carries no business meaning and is
 
 <div>
 
-In a PG-strict app, nearly every query says `WHERE deleted_at IS NULL`. A partial index covers only live rows, so it stays small.
+**A PG-strict application never physically deletes a record.** It sets `deleted_at`, so nearly every query then says `WHERE deleted_at IS NULL`, and a partial index on that condition covers only live rows and stays small.
 
-A soft delete is still an `UPDATE`. It leaves a dead row version for vacuum.
+But a soft delete is still an `UPDATE`, and every `UPDATE` writes a new row version and leaves the old one dead for vacuum.
 
-A HOT update skips the index writes. It works only when the update changes no indexed column, and the partial index's `WHERE` counts.
+A HOT update is the cheap kind: the new version fits on the same page and no index is touched. It only qualifies when the update changes no indexed column, and a partial index's `WHERE` clause counts as indexed.
 
 </div>
 
 <div class="card amber">
 
-<div class="kicker">HOT updates out of 200 soft deletes, PostgreSQL 18</div>
+<div class="kicker">I soft-deleted 200 rows twice on PostgreSQL 18 and counted the cheap updates</div>
 
 <div class="hot-bars">
-<div class="hot-row"><span class="hot-label">No index on <code>deleted_at</code></span><div class="hot-bar"><div class="hot-fill" style="--w:87%"></div></div><span class="hot-num">174</span></div>
-<div class="hot-row"><span class="hot-label"><code>WHERE deleted_at IS NULL</code></span><div class="hot-bar"><div class="hot-fill" style="--w:0%"></div></div><span class="hot-num amber">0</span></div>
+<div class="hot-row"><span class="hot-label">No index on <code>deleted_at</code></span><div class="hot-bar"><div class="hot-fill" style="--w:87%"></div></div><span class="hot-num">174<small>/200</small></span></div>
+<div class="hot-row"><span class="hot-label">With the partial index</span><div class="hot-bar"><div class="hot-fill" style="--w:0%"></div></div><span class="hot-num amber">0<small>/200</small></span></div>
 </div>
 
-Both runs left 200 dead tuples. Keep the partial index on PG-strict. The reads matter more.
+Add the index and every soft delete costs you index writes. Both runs still left 200 dead rows for vacuum, so keep the index on PG-strict: the reads matter more.
 
 </div>
 
@@ -411,11 +430,15 @@ Note: [9:00 to 10:15] Rule seven, and the one that surprised me. If you soft del
 
 <div>
 
+<div class="big-code">
+
 ```sql
 WHERE account_id = ?
 ORDER BY created_at DESC
 LIMIT 20
 ```
+
+</div>
 
 <p class="fragment"><span class="chip">serves it</span> <code>(account_id, created_at)</code></p>
 
@@ -443,6 +466,8 @@ Note: [10:15 to 11:15] This is the one index rule worth carrying in your head. P
 
 ---
 
+<!-- .slide: class="dense" -->
+
 <div class="eyebrow warning">Rails models</div>
 
 ## A foreign key points at one table. Pick accordingly.
@@ -457,6 +482,8 @@ Note: [10:15 to 11:15] This is the one index rule worth carrying in your head. P
 
 A real key can point at `carts.id`. It just cannot say *which* subclass, so Postgres accepts a `smoothies.banana_id` that points at a strawberry. Add a `CHECK` for that.
 
+*The downside:* one wide table shared by every subclass, so any column one class needs is nullable for all of them.
+
 </div>
 
 <div class="card">
@@ -466,6 +493,8 @@ A real key can point at `carts.id`. It just cannot say *which* subclass, so Post
 ### Delegated types
 
 Each class gets its own table, and a join row points at whichever one applies. That key is real and enforced, and each table can require its own columns.
+
+*The downside:* more tables, an extra join on every read, and Rails wiring the next person has to learn.
 
 </div>
 
@@ -477,6 +506,8 @@ Each class gets its own table, and a join row points at whichever one applies. T
 
 `edible_id` points at whatever `edible_type` names on that row, and no foreign key can express that. You trade enforcement for convenience.
 
+*The downside:* nothing stops an orphan, nothing cascades, and the database cannot tell you when it happened.
+
 </div>
 
 </div>
@@ -486,6 +517,8 @@ Each class gets its own table, and a join row points at whichever one applies. T
 Note: [11:15 to 12:15] Rails gives you three ways to map many classes onto tables, and they differ in exactly one thing: whether you still get a real foreign key. Single table inheritance is one table with a type column. Other tables can point a genuine key at it, but that key cannot say which subclass, so the database will happily let a smoothie reference a strawberry as its banana. If the subclass matters, add a check constraint. Delegated types, which arrived in Rails 6.1, give each class its own table with a join row pointing at it, so every reference is enforced, and each table can make its own columns required. Polymorphic associations give that up entirely: the id column points at whichever table the type column names, and there is no such foreign key in SQL. And in all three, store a short lowercase token in the type column, because a module rename otherwise turns into a data migration across millions of rows.
 
 ---
+
+<!-- .slide: class="dense" -->
 
 <div class="eyebrow">The reference file</div>
 
@@ -567,7 +600,7 @@ Note: [13:00 to 13:50] Here is the recipe. Start with the class, because every r
 
 <div class="eyebrow">Bonus</div>
 
-## But Wait, There is more!
+## Priceless Tangent
 
 <p style="float: right; margin-top: -100px;">Watch for <a href="https://dry-cli.tools">dry-cli.tools</a> coming online soon!</small>
 

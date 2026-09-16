@@ -25,6 +25,10 @@ body,
     text-align: left;
 }
 
+.highlight {
+  color: var(--amber);
+}
+
 .reveal h1,
 .reveal h2,
 .reveal h3,
@@ -339,7 +343,7 @@ body,
 
 .reveal .eyebrow {
     font-family: var(--r-code-font);
-    font-size: 0.62em;
+    font-size: 0.8em;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--lime);
@@ -483,11 +487,14 @@ body,
 .reveal .quiz {
     display: grid;
     margin-top: 0.6em;
+    padding-top:100px;
     min-height: 4.5em;
+    text-shadow: 0 0 20px green;
 }
 
 .reveal .quiz > p {
     grid-area: 1 / 1;
+    font-size: 2.6em !important;
     font-family: var(--r-heading-font);
     font-size: 2.1em;
     font-weight: 700;
@@ -497,5 +504,51 @@ body,
 }
 
 .reveal .quiz > p code {
-    font-size: 0.72em !important;
+    font-size: 0.92em !important;
+}
+
+/* A query the room has to read from the back of the hall. */
+.reveal .big-code pre code {
+    font-size: 0.95em !important;
+}
+
+.reveal .hot-num {
+    white-space: nowrap;
+}
+
+.reveal .hot-num small {
+    font-size: 0.5em;
+    color: var(--muted);
+}
+
+/* Slides carrying more explanation than the rest: same voice, less air. */
+.reveal section.dense p,
+.reveal section.dense li {
+    font-size: 0.92em;
+    line-height: 1.35;
+    margin-bottom: 0.45em;
+}
+
+.reveal section.dense .card {
+    padding: 0.7em 0.9em 0.75em;
+}
+
+.reveal section.dense .card p {
+    font-size: 0.8em;
+}
+
+.reveal section.dense .card h3 {
+    font-size: 1.25em;
+}
+
+.reveal section.dense .page-row i {
+    height: 40px;
+}
+
+.reveal section.dense .two-columns {
+    gap: 1.4em;
+}
+
+.reveal .hot-row {
+    grid-template-columns: 9em 1fr 4.4em;
 }
