@@ -602,7 +602,7 @@ Note: [13:00 to 13:50] Here is the recipe. Start with the class, because every r
 
 ## Priceless Tangent
 
-<p style="float: right; margin-top: -100px;">Watch for <a href="https://dry-cli.tools">dry-cli.tools</a> coming online soon!</small>
+<p class="corner-note">Watch for <a href="https://dry-cli.tools">dry-cli.tools</a>, coming online soon.</p>
 
 <p class="lede">How I run my Software Team</p>
 
@@ -654,17 +654,15 @@ Note: [13:50 to 14:40] One more thing, if you want to see how the skill file fit
 
 <!-- .slide: class="center final-slide" -->
 
-# Thanks! | <small><a href="https://kig.re/skills">kig.re</a></small>
+# Thanks!
 
 <div class="author-section">
   <div class="questions">
-     Was this helpful?<br>
-     What could I have done better?<br>
-      <small>Download my PG skill tomorrow from <a href="https://kig.re/skills">kig.re/skills</a></small>
-     <hr>
-     I will soon be for hire!<br>
-     (415) 265 1054 (Talk to me!)
-    </div>
+    Was this helpful?<br>
+    What could I have done better?
+    <p class="closing-note">Download my PostgreSQL skill tomorrow from <a href="https://kig.re/skills">kig.re/skills</a></p>
+    <p class="closing-hire">I am for hire soon. Talk to me: (415) 265 1054</p>
+  </div>
   <img src="assets/img/kig.jpeg" alt="Konstantin Gredeskoul" class="author-photo">
 </div>
 
