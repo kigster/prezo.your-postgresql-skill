@@ -68,6 +68,8 @@ Note: [0:30 to 1:30] Before any rule about indexes or keys, answer one question.
 <tr class="fragment"><td>Deletes</td><td>Physical</td><td>Decide per table</td><td class="hot">Logical only, <code>deleted_at</code></td><td>Rare</td></tr>
 <tr class="fragment"><td><code>ON DELETE</code></td><td><code>CASCADE</code></td><td>Stated on every key</td><td class="hot">Custom, sets <code>deleted_at</code></td><td>Rarely matters</td></tr>
 <tr class="fragment"><td>Row locking</td><td><code>lock_version</code> is fine</td><td>Where money moves</td><td class="hot"><code>FOR UPDATE</code> by default</td><td>Few writers</td></tr>
+<tr class="fragment"><td>Query mix</td><td>Many small reads</td><td>Small reads and writes</td><td class="hot">Small reads and writes</td><td>A few heavy, long queries</td></tr>
+<tr class="fragment"><td>Rough throughput</td><td>2k to 10k tx/s</td><td>500 to 5k tx/s</td><td class="hot">100 to 1k tx/s</td><td>Under 10 queries/s</td></tr>
 </tbody>
 </table>
 
@@ -82,7 +84,7 @@ Database class: PG-strict. Logical deletes only. Ask before any physical DELETE.
 
 <div class="kill fragment">Skip this line and your agent adds ON DELETE CASCADE to a ledger.</div>
 
-Note: [1:30 to 2:45] Here is why the class comes first. The same question gets four different answers. Should a delete remove the row? In a game, yes. In a ledger, never. What happens to child rows when a parent goes away? Cascade in a game, a custom soft delete in a bank. Do you lock rows before you update a balance? In a strict app, always. So the first rule in my skill says: ask the human for the class, or read it from the spec, and write it in AGENTS.md. One line. Every later decision reads it. Without that line, an agent will happily put a cascading delete on your ledger table.
+Note: [1:30 to 2:45] Here is why the class comes first. The same question gets four different answers. Should a delete remove the row? In a game, yes. In a ledger, never. What happens to child rows when a parent goes away? Cascade in a game, a custom soft delete in a bank. Do you lock rows before you update a balance? In a strict app, always. So the first rule in my skill says: ask the human for the class, or read it from the spec, and write it in AGENTS.md. One line. Every later decision reads it. Without that line, an agent will happily put a cascading delete on your ledger table. The last two rows are the shape of the load. A medium social network runs thousands of small transactions a second, almost all reads. An online store runs fewer, because more of them write. A ledger runs fewer still, because rows are locked while money moves. A warehouse may run under ten queries a second, and each one takes seconds or minutes. These are orders of magnitude on one primary, not benchmarks. Measure your own.
 
 ---
 

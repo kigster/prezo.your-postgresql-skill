@@ -62,14 +62,14 @@
 /* Step zero: the class table. */
 .reveal table.class-table {
     width: 100%;
-    margin: 0.4em 0 0.6em;
+    margin: 0.3em 0 0.5em;
     border-collapse: collapse;
-    font-size: 0.95em;
+    font-size: 0.8em;
 }
 
 .reveal table.class-table th,
 .reveal table.class-table td {
-    padding: 0.45em 0.6em;
+    padding: 0.3em 0.55em;
     border: none;
     border-bottom: 1px solid var(--hair);
     text-align: left;
