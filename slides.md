@@ -597,10 +597,12 @@ Note: [13:50 to 14:40] One more thing, if you want to see how the skill file fit
 
 <div class="author-section">
   <div class="questions">
-    What did I get wrong?<br>
-    What did you measure?<br>
-    What is in your file?
-  </div>
+     Did you get anyting out of this?<br>
+     What could I have done better?<br>
+     I am wrapping bootstrapped startup... so<br>
+     Know any awesome teams that need senior talent?<br>
+     (415) 265 1054 (Talk to me!)
+    </div>
   <img src="assets/img/kig.jpeg" alt="Konstantin Gredeskoul" class="author-photo">
 </div>
 
