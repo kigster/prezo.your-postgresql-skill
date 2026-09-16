@@ -65,11 +65,11 @@ Note: [0:30 to 1:30] Before any rule about indexes or keys, answer one question.
 <tr><th></th><th>PG-lax</th><th>PG-traditional</th><th class="hot">PG-strict</th><th>PG-analytics</th></tr>
 </thead>
 <tbody>
+<tr class="fragment"><td>Rough throughput</td><td>2k to 10k tx/s</td><td>500 to 5k tx/s</td><td class="hot">100 to 1k tx/s</td><td>Under 10 queries/s</td></tr>
 <tr class="fragment"><td>Deletes</td><td>Physical</td><td>Decide per table</td><td class="hot">Logical only, <code>deleted_at</code></td><td>Rare</td></tr>
 <tr class="fragment"><td><code>ON DELETE</code></td><td><code>CASCADE</code></td><td>Stated on every key</td><td class="hot">Custom, sets <code>deleted_at</code></td><td>Rarely matters</td></tr>
 <tr class="fragment"><td>Row locking</td><td><code>lock_version</code> is fine</td><td>Where money moves</td><td class="hot"><code>FOR UPDATE</code> by default</td><td>Few writers</td></tr>
 <tr class="fragment"><td>Query mix</td><td>Many small reads</td><td>Small reads and writes</td><td class="hot">Small reads and writes</td><td>A few heavy, long queries</td></tr>
-<tr class="fragment"><td>Rough throughput</td><td>2k to 10k tx/s</td><td>500 to 5k tx/s</td><td class="hot">100 to 1k tx/s</td><td>Under 10 queries/s</td></tr>
 </tbody>
 </table>
 
