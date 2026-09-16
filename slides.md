@@ -417,6 +417,50 @@ Note: [10:15 to 11:15] This is the one index rule worth carrying in your head. P
 
 ---
 
+<div class="eyebrow warning">Rails models</div>
+
+## A foreign key points at one table. Pick accordingly.
+
+<div class="three-grid rise">
+
+<div class="card">
+
+<div class="kicker">One table, many classes</div>
+
+### STI
+
+A real key can point at `carts.id`. It just cannot say *which* subclass, so Postgres accepts a `smoothies.banana_id` that points at a strawberry. Add a `CHECK` for that.
+
+</div>
+
+<div class="card">
+
+<div class="kicker">Rails 6.1 and later</div>
+
+### Delegated types
+
+Each class gets its own table, and a join row points at whichever one applies. That key is real and enforced, and each table can require its own columns.
+
+</div>
+
+<div class="card amber">
+
+<div class="kicker">The one that gives up the key</div>
+
+### Polymorphic
+
+`edible_id` points at whatever `edible_type` names on that row, and no foreign key can express that. You trade enforcement for convenience.
+
+</div>
+
+</div>
+
+<p class="fragment">Store <code>banana</code> in the type column, never <code>Fruit::Banana</code>, or renaming a module becomes a data migration. Index <code>(edible_id, edible_type DESC)</code>.</p>
+
+Note: [11:15 to 12:15] Rails gives you three ways to map many classes onto tables, and they differ in exactly one thing: whether you still get a real foreign key. Single table inheritance is one table with a type column. Other tables can point a genuine key at it, but that key cannot say which subclass, so the database will happily let a smoothie reference a strawberry as its banana. If the subclass matters, add a check constraint. Delegated types, which arrived in Rails 6.1, give each class its own table with a join row pointing at it, so every reference is enforced, and each table can make its own columns required. Polymorphic associations give that up entirely: the id column points at whichever table the type column names, and there is no such foreign key in SQL. And in all three, store a short lowercase token in the type column, because a module rename otherwise turns into a data migration across millions of rows.
+
+---
+
 <div class="eyebrow">The reference file</div>
 
 ## Everything else goes in the reference file
@@ -457,9 +501,9 @@ pgBouncer in transaction mode. About 16 to 20 server connections on 8 cores.
 
 <div class="card">
 
-### STI types
+### N+1 queries
 
-Store `banana` in `type`, not `Fruit::Banana`. A module rename then costs nothing.
+`strict_loading` raises in development instead of running 400 queries in production.
 
 </div>
 
@@ -473,7 +517,7 @@ An open snapshot blocks freezing. Turning autovacuum off does not.
 
 </div>
 
-Note: [11:15 to 12:30] SKILL.md stays short on purpose. The rest lives in the reference file, which the agent reads before it designs a schema. A few examples. Two SELECTs in one transaction can disagree, so read-modify-write needs FOR UPDATE. Money is integer cents with a currency code. Timeouts are set on the database role, so connection pooling cannot drop them. The pool on the database side is small, around twenty connections for eight cores. Store a short lowercase token in STI type columns so a module rename is not a data migration. And transaction ID wraparound comes from a snapshot someone left open, not from autovacuum being off. The whole file is in the blog post.
+Note: [12:15 to 13:00] SKILL.md stays short on purpose. The rest lives in the reference file, which the agent reads before it designs a schema. A few examples. Two SELECTs in one transaction can disagree, so read-modify-write needs FOR UPDATE. Money is integer cents with a currency code. Timeouts are set on the database role, so connection pooling cannot drop them. The pool on the database side is small, around twenty connections for eight cores. Strict loading turns a hidden N plus one into an exception while you are still writing the code. And transaction ID wraparound comes from a snapshot someone left open, not from autovacuum being off. The whole file is in the blog post.
 
 ---
 
@@ -491,7 +535,7 @@ Note: [11:15 to 12:30] SKILL.md stays short on purpose. The rest lives in the re
 
 <div class="kill fragment">Then run the unused-index query on production. I dare you.</div>
 
-Note: [12:30 to 13:30] Here is the recipe. Start with the class, because every rule depends on it. Write a description that triggers on the words you actually type. Keep SKILL.md short, and fill it with the rules whose failure is silent: the lock timeout, the three-step NOT NULL, the partial index tradeoff. Put the long explanations in a reference file. Then keep it alive. Each outage you survive is a line in the file. If a new PostgreSQL release contradicts a rule, the file tells the agent to stop and ask you. And yes, run the unused-index query. You will find something.
+Note: [13:00 to 13:50] Here is the recipe. Start with the class, because every rule depends on it. Write a description that triggers on the words you actually type. Keep SKILL.md short, and fill it with the rules whose failure is silent: the lock timeout, the three-step NOT NULL, the partial index tradeoff. Put the long explanations in a reference file. Then keep it alive. Each outage you survive is a line in the file. If a new PostgreSQL release contradicts a rule, the file tells the agent to stop and ask you. And yes, run the unused-index query. You will find something.
 
 ---
 
@@ -543,7 +587,7 @@ Lets concurrent agents lock part of the tree to themselves. It uses local Redis 
 
 </div>
 
-Note: [13:30 to 14:30] One more thing, if you want to see how the skill file fits into a bigger setup. agentilda-ai-setup installs skills, plugins, commands, and hooks for whichever agent you use, and lets you pick only the parts you want from other repos. agentilda is the Ruby gem that does the heavy lifting. Its tilda command takes a spec, refines it, plans it, builds it, opens a pull request, and runs review until the work is approved. Run tilda install skills and your agent learns how to use it. agent-lock is the small one I cannot live without. I run ten agents at once, and it lets each of them lock the part of the tree it is writing, with Redis or the file system underneath.
+Note: [13:50 to 14:40] One more thing, if you want to see how the skill file fits into a bigger setup. agentilda-ai-setup installs skills, plugins, commands, and hooks for whichever agent you use, and lets you pick only the parts you want from other repos. agentilda is the Ruby gem that does the heavy lifting. Its tilda command takes a spec, refines it, plans it, builds it, opens a pull request, and runs review until the work is approved. Run tilda install skills and your agent learns how to use it. agent-lock is the small one I cannot live without. I run ten agents at once, and it lets each of them lock the part of the tree it is writing, with Redis or the file system underneath.
 
 ---
 
@@ -562,4 +606,4 @@ Note: [13:30 to 14:30] One more thing, if you want to see how the skill file fit
 
 <div class="author-credit"><a href="https://kig.re/2026/08/19/condensing-twenty-years-of-wisdom-in-one-markdown.html">Condensing twenty years of wisdom in one markdown, on kig.re</a></div>
 
-Note: [14:30 to 15:00] The whole file is in that post. Take it, argue with it, and write your own. I would like to hear the arguments, especially if you measured a HOT number different from 174.
+Note: [14:40 to 15:00] The whole file is in that post. Take it, argue with it, and write your own. I would like to hear the arguments, especially if you measured a HOT number different from 174.
