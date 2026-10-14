@@ -1,21 +1,97 @@
-@import url('../fonts/FantasqueSansMono.css');
-@import url('../fonts/Dosis.css');
-@import url('../fonts/Agdasima.css');
+@import url("../fonts/FantasqueSansMono.css");
+@import url("../fonts/Dosis.css");
+@import url("../fonts/Agdasima.css");
 
 .reveal {
-    --r-code-font: 'Fantasque Sans Mono', monospace;
-    --r-main-font: 'Dosis', sans-serif;
-    --r-heading-font: 'Agdasima', sans-serif;
+  --r-code-font: "Fantasque Sans Mono", monospace;
+  --r-main-font: "Dosis", sans-serif;
+  --r-heading-font: "Agdasima", sans-serif;
 }
 
 pre[class*="language-"] {
-    margin: 20px 0 !important;
-    padding: 0 !important;
-    border: 1px solid #2A322E !important;
-    border-radius: 0 !important;
+  margin: 20px 0 !important;
+  padding: 0 !important;
+  border: 1px solid #2a322e !important;
+  border-radius: 0 !important;
 
-    code {
-        font-size: 0.72em !important;
-        min-height: auto !important;
-    }
+  code {
+    font-size: 0.72em !important;
+    min-height: auto !important;
+  }
+}
+
+.reveal .vspacer-50 {
+  margin-top: 50px;
+}
+
+.reveal .vspacer-100 {
+  margin-top: 100px;
+}
+
+.reveal .vspacer-150 {
+  margin-top: 150px;
+}
+
+.reveal .columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1em;
+}
+
+.reveal .image-thirds img {
+  width: 100%;
+  aspect-ratio: 800 / 800;   /* image width / (image height ÷ 3) */
+  object-fit: cover;
+  margin: 0;
+}
+
+.reveal div.thirds {
+  width: 100%;
+}
+
+.reveal .image-thirds img:nth-child(1) { object-position: 50% 0%; clip-path: inset(0 0 65% 0); margin-top: 30%;}
+.reveal .image-thirds img:nth-child(2) { object-position: 50% 50%; clip-path: inset(33% 0 0 0); margin-top: 0%;}
+.reveal .image-thirds img:nth-child(3) { object-position: 50% 100%; clip-path: inset(66% 0 0 0); margin-top: 30%;}
+
+.github-label {
+  white-space: nowrap;
+  color: #fff;
+  padding: 10px;
+  border-radius: 15px;
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 0px;
+  width: 300px;
+  display: inline-block;
+}
+
+.label-ready-for-review {
+    background-color: #4cf14c;
+    color: #000000;
+}
+
+.label-review-in-progress {
+    background-color: #f9f911;
+    color: #000000;
+}
+
+.label-ready-for-merge {
+    background-color: #045f04;
+    color: #fff;
+}
+
+.label-rejected {
+    background-color: #a80000;
+    color: #fff;
+}
+
+.reveal .slides section .fragment.drop {
+  opacity: 0;
+  transform: translateY(-400px);
+  transition: transform 0.7s ease-out, opacity 0.7s ease-out;
+}
+.reveal .slides section .fragment.drop.visible {
+  opacity: 1;
+  transform: none;
 }
