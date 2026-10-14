@@ -616,7 +616,7 @@ An open snapshot blocks freezing. Turning autovacuum off does not.
 ## Using the Skill(s)
 
 <section>
-  <img src="assets/img/flowchart-black.png" class="fade-down"/>
+  <img src="assets/img/flowchart-black.avif" class="fade-down"/>
 </section>
 
 
@@ -696,8 +696,6 @@ alock skill install \
 
 </div>
 
-Note: [13:50 to 14:40] One more thing, if you want to see how the skill file fits into a bigger setup. agentilda-ai-setup installs skills, plugins, commands, and hooks for whichever agent you use, and lets you pick only the parts you want from other repos. agentilda is the Ruby gem that does the heavy lifting. Its tilda command takes a spec, refines it, plans it, builds it, opens a pull request, and runs review until the work is approved. Run tilda install skills and your agent learns how to use it. agent-lock is the small one I cannot live without. I run ten agents at once, and it lets each of them lock the part of the tree it is writing, with Redis or the file system underneath.
-
 ---
 
 <!-- .slide: class="dense" -->
@@ -718,7 +716,7 @@ Note: [13:50 to 14:40] One more thing, if you want to see how the skill file fit
     </div>
   </div>
   <div class="card fragments kicker" style="padding: 0 !important; margin: 0 !important; text-align: center;">
-    <img src="/assets/img/software-factory-states.png" data-preview-image="/assets/img/software-factory-states.png" style="margin-top: -40px; width: 100% !important;">
+    <img src="/assets/img/software-factory-states.avif" data-preview-image="/assets/img/software-factory-states.avif" style="margin-top: -40px; width: 100% !important;">
   </div>
   <div class="card kicker">
     <ul>
@@ -737,12 +735,11 @@ Note: [13:50 to 14:40] One more thing, if you want to see how the skill file fit
 
 ## Factory In Action
 
-<div class="rise"  style="width: 100%">
-<section style="width: 100%; text-align: center;">
-  <img src="/assets/img/software-factory.png" class="fragment fade-down" style="margin: 30px 200px !important; width: 75%;"/>
-</section>
+<div style="width: 100%">
+<div style="width: 100%; text-align: center;">
+<img src="/assets/img/software-factory.avif" class="fragment" style="margin: 30px 200px !important; width: 75%;"/>
 </div>
-
+</div>
 
 ---
 
@@ -751,59 +748,58 @@ Note: [13:50 to 14:40] One more thing, if you want to see how the skill file fit
 <p class="questions">Please leave them on one of these two posts about this subject.</p>
 
 <div class="social-tiles rise">
-  <a class="social-tile" href="https://kig.re/2026/08/19/condensing-twenty-years-of-wisdom-in-one-markdown.html" target="_blank" rel="noopener">
-    <img src="assets/img/og-wisdom.jpg" alt="Condensing Twenty Years of Wisdom in One Markdown">
-    <div class="social-body">
-      <div class="social-host">kig.re · 18 Aug 2026</div>
-      <h3>Condensing Twenty Years of Wisdom in One Markdown</h3>
-      <p>Two decades of PostgreSQL scar tissue, dumped into one markdown file agents load on demand.</p>
-    </div>
-  </a>
-  <a class="social-tile" href="https://kig.re/2026/09/21/one-agentic-setup-on-every-machine.html" target="_blank" rel="noopener">
-    <img src="assets/img/og-factory.png" alt="Agentic Software Factory, In Action">
-    <div class="social-body">
-      <div class="social-host">kig.re · 20 Sep 2026</div>
-      <h3>Agentic Software Factory, In Action</h3>
-      <p>One config, a factory that turns specs into PRs, and locks so agents do not clobber each other.</p>
-    </div>
-  </a>
+<a class="social-tile" href="https://kig.re/2026/08/19/condensing-twenty-years-of-wisdom-in-one-markdown.html" target="_blank" rel="noopener">
+<img src="assets/img/og-wisdom.jpg" alt="Condensing Twenty Years of Wisdom in One Markdown">
+<div class="social-body">
+<div class="social-host">kig.re · 18 Aug 2026</div>
+<h3>Condensing Twenty Years of Wisdom in One Markdown</h3>
+<p>Two decades of PostgreSQL scar tissue, dumped into one markdown file agents load on demand.</p>
+</div>
+</a>
+<a class="social-tile" href="https://kig.re/2026/09/21/one-agentic-setup-on-every-machine.html" target="_blank" rel="noopener">
+<img src="assets/img/og-factory.avif" alt="Agentic Software Factory, In Action">
+<div class="social-body">
+<div class="social-host">kig.re · 20 Sep 2026</div>
+<h3>Agentic Software Factory, In Action</h3>
+<p>One config, a factory that turns specs into PRs, and locks so agents do not clobber each other.</p>
+</div>
+</a>
 </div>
 
 ---
 
-
 <!-- .slide: class="final-slide" -->
 
 <div class="thanks-top">
-  <div class="thanks-copy">
-    <h1>Thanks!</h1>
-    <h2>I am Konstantin Gredeskoul</h2>
-    <ul class="identity-links">
-      <li>
-        <a href="https://kig.re" target="_blank" rel="noopener">
-          <img class="brand" src="assets/img/logos/kigre.png" alt="">
-          kig.re
-        </a>
-      </li>
-      <li>
-        <a href="https://x.com/kig" target="_blank" rel="noopener">
-          <img class="brand invert" src="assets/img/logos/x.svg" alt="">
-          x.com/kig
-        </a>
-      </li>
-      <li>
-        <a href="https://github.com/kigster" target="_blank" rel="noopener">
-          <img class="brand invert" src="assets/img/logos/github.svg" alt="">
-          github.com/kigster
-        </a>
-      </li>
-      <li>
-        <a href="https://linkedin.com/in/kigster" target="_blank" rel="noopener">
-          <img class="brand" src="assets/img/logos/linkedin.svg" alt="">
-          linkedin.com/in/kigster
-        </a>
-      </li>
-    </ul>
-  </div>
-  <img class="author-photo" src="assets/img/kig-mid-size.png" alt="Konstantin Gredeskoul">
+<div class="thanks-copy">
+<h1>Thanks!</h1>
+<h2>I am Konstantin Gredeskoul</h2>
+<ul class="identity-links">
+<li>
+<a href="https://kig.re" target="_blank" rel="noopener">
+<img class="brand" src="assets/img/logos/kigre.avif" alt="">
+kig.re
+</a>
+</li>
+<li>
+<a href="https://x.com/kig" target="_blank" rel="noopener">
+<img class="brand invert" src="assets/img/logos/x.svg" alt="">
+x.com/kig
+</a>
+</li>
+<li>
+<a href="https://github.com/kigster" target="_blank" rel="noopener">
+<img class="brand invert" src="assets/img/logos/github.svg" alt="">
+github.com/kigster
+</a>
+</li>
+<li>
+<a href="https://linkedin.com/in/kigster" target="_blank" rel="noopener">
+<img class="brand" src="assets/img/logos/linkedin.svg" alt="">
+linkedin.com/in/kigster
+</a>
+</li>
+</ul>
+</div>
+<img class="author-photo" src="assets/img/kig-mid-size.avif" alt="Konstantin Gredeskoul">
 </div>

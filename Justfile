@@ -36,6 +36,8 @@ pdf: install
         --chrome-path "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
         --chrome-arg=--disable-web-security \
         --chrome-arg=--allow-file-access-from-files \
+        --slides 1-27 \
+        --pause 1000 \
         -s 1920x1080 http://127.0.0.1:8111/ deck.pdf
     @kill $(cat /tmp/prezo-pdf-server.pid) 2>/dev/null || true
     @rm -f /tmp/prezo-pdf-server.pid
